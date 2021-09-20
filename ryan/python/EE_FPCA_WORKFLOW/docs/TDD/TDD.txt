@@ -1,0 +1,45 @@
+BUILD USING UBUNTU (wsl)
+
+ToDos - General / intial setup
+---------------
+1) create conda env - global need rasterio, ee, geopandas, pandas, numpy, pyshp (done)
+2) create a environment.yml file with finalized env (done)
+3) create a local git repo (done)
+4) create a remote repo on Github
+5) find original source code <PATH HERE>
+6) figure out what moduels we will need to create (done)
+7) rebuild workflow
+8) create a build.sh to build the working env
+
+
+Dependencies
+------------
+- rasterio
+- ee
+- geopandas
+- pandas
+- numpy
+- pyshp
+
+Project Sturcture
+------------------
+docs
+	|- examples
+	|- TDD
+tests
+fpcaTBX
+	|- __init__.py
+	|- geeFuncs.py
+	|- fefFuncs.py
+	|- peFuncs.py
+setup.py
+environment.yml
+build.sh
+
+workflow
+--------
+- GEE 
+	- Create FeatureCollection
+	- Create Sentinel - 1 Image Collection
+	- Pre - Processing
+	- Sampling Images

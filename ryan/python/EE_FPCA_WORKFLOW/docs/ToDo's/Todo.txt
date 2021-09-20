@@ -1,0 +1,6 @@
+fpcaTBX ToDos
+-------------
+
+- add example data to examples
+- add a method to send output geojson to Google Cloud Platform
+- need to firgure out how to build python lib properly
