@@ -1,0 +1,8 @@
+TODOs
+------
+0) Clone prod ee env add cloud api to conda env
+1) Get bounding geometry of Williston A
+2) Split Bounding Geometry into two equal halfs
+3) calculate the area of each side -> wirte out to readme
+4) run eeFpcaTBX using left v right of bounding geometry
+5) Send results to cloud for each side we want it stored in seperate buckets (need cloud api) 
