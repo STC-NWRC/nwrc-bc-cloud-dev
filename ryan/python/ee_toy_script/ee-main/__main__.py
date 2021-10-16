@@ -1,8 +1,5 @@
 import os
 import shapefile
-
-from google.oauth2 import credentials, service_account
-from google.cloud import storage
 from eefpcaTBX.geeFuncs import *
 from eefpcaTBX.predictionfmt import *
 
@@ -53,9 +50,6 @@ def main(args=None):
                 'maxPixels': 1e13,
                 'formatOptions': {'cloudOptimized': True}
             }
-            
-
-            
             task = ee.batch.Export.image.toCloudStorage(**cloud_conf)
             
             # start the task
