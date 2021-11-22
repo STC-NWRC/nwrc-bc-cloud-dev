@@ -347,6 +347,24 @@ class eeSampling(FeatureCollection):
         if monitor_task:
             self.__monitor(task_que)
 
+    def exportSamplesToCloud(self, bucket):
+        
+        conf = {
+            'collection': None,
+            'desciption': None, 
+            'bucket': bucket,
+            'fileNamePrefix': 'TrainingData/',
+            'fileFormat': 'GeoJSON'
+        }
+
+        for k,v in self.samples.items():
+            total = len(v)
+            for index, collection in enumerate(v,start=1):
+                desciption = f'{k}_{index}_of_{total}'
+                conf['collection'] = collection
+                conf['desciption'] = desciption
+                task = ee.batch.Export.table.toCloudStorage(**conf)
+                task.start()
 
     def __monitor(self, que: list):
         import time

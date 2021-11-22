@@ -1,14 +1,14 @@
 
-import fpcaTBX.geeFuncs as tbx
+import eefpcaTBX.geeFuncs as tbx
 
 # Example workflow for getting data for Data extraction for Google Earth Engine FPCA
 def main(args=None):
     # step one is to define the area you are intresed in
-    aoi = 'point_feature_collection' 
+    aoi = '' 
     
     # step two: create some variable that define the time series you are intresed in
-    years = [2018, 2019, 2020]
-    months = ['04-01', '09-30']
+    years = [2020]
+    months = ['04-01', '09-31']
 
     # this will be the query we will use to view all the
     collection = tbx.S1Collection(
@@ -38,7 +38,7 @@ def main(args=None):
 
     # step 7: Sampled the input images
     # this will generate a feature collection of samples for each image that 
-    smpObj = tbx.eeSampling(aoi, images=ee_processed)
+    smpObj = tbx.eeSampling(images=ee_processed)
 
     # step 8: is to export to all feature collections to drive
     # configuration is set internally
