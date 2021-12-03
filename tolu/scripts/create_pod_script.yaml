@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: script-transfer-pod
+  namespace: default
+spec:
+  containers:
+  - name: script-transfer-container
+    image: nginx
+    volumeMounts:
+    - mountPath: /scripts
+      name: script-volume
+  volumes:
+  - name: script-volume
+    persistentVolumeClaim:
+      claimName: new-disk-claim 
