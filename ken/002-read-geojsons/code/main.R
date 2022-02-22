@@ -41,6 +41,7 @@ code.files <- c(
     "getData-geojson.R",
     "initializePlot.R",
     "preprocess-training-data.R",
+    "train-fpc-FeatureEngine.R",
     "visualize-training-data.R"
     );
 
@@ -51,6 +52,10 @@ for ( code.file in code.files ) {
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 dir.geoson <- file.path(data.directory,"training-data-geojson");
+
+target.variable      <- 'VV';
+n.harmonics          <- 7;
+RData.trained.engine <- 'trained-fpc-FeatureEngine.RData';
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.colour.scheme <- getData.colour.scheme();
@@ -86,21 +91,21 @@ visualize.training.data(
 gc();
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# trained.fpc.FeatureEngine <- train.fpc.FeatureEngine(
-#     DF.training      = DF.training,
-#     DF.land.cover    = DF.nearest.lat.lon[,c('lat_lon','land_cover')],
-#     x                = 'lon',
-#     y                = 'lat',
-#     date             = 'date',
-#     variable         = target.variable,
-#     min.date         = as.Date("2019-01-15"),
-#     max.date         = as.Date("2019-12-16"),
-#     n.harmonics      = 7,
-#     DF.colour.scheme = DF.colour.scheme,
-#     RData.output     = RData.trained.engine
-#     );
-# gc();
-# print( str(trained.fpc.FeatureEngine) );
+trained.fpc.FeatureEngine <- train.fpc.FeatureEngine(
+    DF.training      = DF.training,
+    x                = 'longitude',
+    y                = 'latitude',
+    land.cover       = 'land_cover',
+    date             = 'date',
+    variable         = target.variable,
+    min.date         = as.Date("2019-01-15"),
+    max.date         = as.Date("2019-12-16"),
+    n.harmonics      = n.harmonics,
+    DF.colour.scheme = DF.colour.scheme,
+    RData.output     = RData.trained.engine
+    );
+gc();
+print( str(trained.fpc.FeatureEngine) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
