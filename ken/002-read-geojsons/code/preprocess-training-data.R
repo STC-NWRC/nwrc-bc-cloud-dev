@@ -1,6 +1,7 @@
 
 preprocess.training.data <- function(
-    DF.input = NULL
+    DF.input         = NULL,
+    DF.colour.scheme = NULL
     ) {
 
     thisFunctionName <- "preprocess-training-data";
@@ -20,8 +21,12 @@ preprocess.training.data <- function(
     colnames(DF.output) <- gsub(x = colnames(DF.output), pattern = "^vh$",      replacement = "VH");
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.output[,'date']       <- as.Date(DF.output[,'date']);
-    DF.output[,'land_cover'] <- factor(DF.output[,'land_cover']);
+    DF.output[,'date'] <- as.Date(DF.output[,'date']);
+
+    DF.output[,'land_cover'] <- factor(
+        x      = DF.output[,       'land_cover'],
+        levels = DF.colour.scheme[,'land_cover']
+        );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.output <- DF.output[order(DF.output$latitude,DF.output$longitude,DF.output$date),];

@@ -19,7 +19,9 @@ setwd( output.directory );
 require(fpcFeatures);
 
 require(arrow);
+require(ggplot2);
 require(jsonlite);
+require(lubridate);
 # require(doParallel);
 # require(foreach);
 # require(ggplot2);
@@ -35,8 +37,11 @@ require(jsonlite);
 
 # source supporting R code
 code.files <- c(
+    "getData-colour-scheme.R",
     "getData-geojson.R",
-    "preprocess-training-data.R"
+    "initializePlot.R",
+    "preprocess-training-data.R",
+    "visualize-training-data.R"
     );
 
 for ( code.file in code.files ) {
@@ -48,17 +53,54 @@ for ( code.file in code.files ) {
 dir.geoson <- file.path(data.directory,"training-data-geojson");
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+DF.colour.scheme <- getData.colour.scheme();
+
+cat("\nstr(DF.colour.scheme)\n");
+print( str(DF.colour.scheme)   );
+
 DF.training <- getData.geojson(
     input.directory = dir.geoson,
-    parquet.output  = "DF-training.parquet"
+    parquet.output  = "DF-training-raw.parquet"
     );
 
 DF.training <- preprocess.training.data(
-    DF.input = DF.training
+    DF.input         = DF.training,
+    DF.colour.scheme = DF.colour.scheme
+    );
+
+arrow::write_parquet(
+    sink = "DF-training.parquet",
+    x    = DF.training
     );
 
 cat("\nstr(DF.training)\n");
 print( str(DF.training)   );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+visualize.training.data(
+    DF.training      = DF.training,
+    colname.pattern  = "(VV|VH)",
+    DF.colour.scheme = DF.colour.scheme,
+    output.directory = "plot-training-data"
+    );
+gc();
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+# trained.fpc.FeatureEngine <- train.fpc.FeatureEngine(
+#     DF.training      = DF.training,
+#     DF.land.cover    = DF.nearest.lat.lon[,c('lat_lon','land_cover')],
+#     x                = 'lon',
+#     y                = 'lat',
+#     date             = 'date',
+#     variable         = target.variable,
+#     min.date         = as.Date("2019-01-15"),
+#     max.date         = as.Date("2019-12-16"),
+#     n.harmonics      = 7,
+#     DF.colour.scheme = DF.colour.scheme,
+#     RData.output     = RData.trained.engine
+#     );
+# gc();
+# print( str(trained.fpc.FeatureEngine) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
