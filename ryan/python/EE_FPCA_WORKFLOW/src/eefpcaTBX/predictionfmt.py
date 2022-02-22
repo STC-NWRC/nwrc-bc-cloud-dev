@@ -6,7 +6,7 @@ import numpy as np
 from datetime import datetime
 
 # internal classes
-from geeFuncs import FeatureCollection, eePreProcessing
+from .geeFuncs import FeatureCollection, eePreProcessing
 
 class ExportImages:
     """Used to Export images you want to predict on addes pixel lat lon to the image"""
@@ -16,7 +16,7 @@ class ExportImages:
         self._for_export       = self.__process_ee_images()
 
     def __export_name(self, image: ee.Image):
-        date = image.date().format('YYYYDDmm')
+        date = image.date().format('YYYYMMdd')
         mode = image.get('instrumentMode')
         
         date_str = ee.String(date)
@@ -39,15 +39,52 @@ class ExportImages:
                 - co - registering all images in the list
                 - add Pixel lat lon bands to each image (important if converting to)
             """
+
+        def copy_poperties(image:ee.Image, prop, prop2) -> dict:
+            lat_lon_bands = image.pixelLonLat()
+            
+            return image.set({
+                prop: image.get(prop),
+                prop2: image.get(prop2)
+            }).addBands(lat_lon_bands)
+
+
         processing = eePreProcessing(self._system_ids_dict).runPreProcessing()
+        
         # add Pixel Lat Lon to each image
-        return {k: [x.pixelLonLat().map(self.__export_name) for x in v] for k,v in processing.items()}
 
-    def exportToGoogleCloud(self, conf: dict):
-        for image in self._for_export.items():
-            pass
+        return {k: [self.__export_name(copy_poperties(x, "instrumentMode", "system:time_start")) for x in v] \
+             for k,v in processing.items()}
 
-    def exportToGoogleDrive(self, project_name=None):
+    def exportToGoogleCloud(self, cloud_bucket, crs=None):
+
+        bounds = ee.FeatureCollection(self._aoi).geometry()
+
+        conf = {
+            'image': None,
+            'description': None,
+            'bucket': cloud_bucket,
+            'fileNamePrefix': "img/",
+            'crs': f"EPSG:{crs}",
+            'region': bounds,
+            'fileFormat': "GeoTIFF",
+            'maxPixels': 1e13,
+            'scale': 10,
+            'formatOptions': {
+                'cloudOptimized': True
+            }
+        }
+
+        for array in self._for_export.values():
+            for image in array:
+                conf["image"] = image
+                conf['description'] = ee.String(image.get('export_name')).getInfo()
+                task = ee.batch.Export.image.toCloudStorage(**conf)
+                task.start()
+
+    def exportToGoogleDrive(self, project_name=None, crs=None):
+
+        bounds = ee.FeatureCollection(self._aoi).geometry().bounds()
         
         conf = {
             'image': None, 
@@ -55,7 +92,7 @@ class ExportImages:
             'folder': None,
             'fileFormat': 'GeoTIFF',
             'scale': 10,
-            'region': FeatureCollection(self._aoi).geometry().bounds(),
+            'region': bounds,
             'maxPixels': 1e13
         }
 
@@ -68,12 +105,21 @@ class ExportImages:
             folder = f'{project_name}_GeoTIFFS_{fmt_time}'
 
         conf['folder'] = folder
+        # function to help defult proj
+        def getCrs():
+            img = list(self._for_export.values())[0][0]
+            return img.projection().crs()
 
-        for image in self._for_export.values():
-            conf['image'] = image
-            conf['description'] = image.get('export_name')
-            task = ee.batch.Export.image.toDrive(**conf)
-            task.start()
+        # Add CRS 
+        conf['crs'] = f'EPSG:{crs}' if crs is not None else None
+
+        for array in self._for_export.values():
+            for image in array:
+                conf['image'] = image
+                image.getInfo()
+                conf['description'] = ee.String(image.get('export_name')).getInfo()
+                task = ee.batch.Export.image.toDrive(**conf)
+                task.start()
 
 class Tiff2CSV:
     """Takes in a GeoTIFF and converts it to a CSV"""
@@ -106,8 +152,11 @@ class Tiff2CSV:
             os.makedirs(self.outdif)
 
         for k,v in self.bands.items():
+            li = name.split("\\")[-1].split("_")
+            date = li[1]
+            mode = li[2]
             fmt = f'_{date}_{mode}_{k}.csv'
-            out_path = os.path.join(self.outpath, fmt)
+            out_path = os.path.join(self.outdif, fmt)
             data = ds.read(v)
             np.savetxt(out_path, data, delimiter=',')
 

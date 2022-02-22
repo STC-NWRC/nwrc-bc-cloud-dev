@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="eefpcaTBX-pkg-Ryan-Hamilton",
-    version="0.0.1",
+    version="0.0.11",
     author="Ryan Hamilton",
     author_email="ryangilberthamilton@gmail.com",
     description="Standalone EE FPCA data getter scripts",
