@@ -42,6 +42,7 @@ code.files <- c(
     "initializePlot.R",
     "preprocess-training-data.R",
     "train-fpc-FeatureEngine.R",
+    "visualize-fpc-approximations.R",
     "visualize-training-data.R"
     );
 
@@ -51,8 +52,11 @@ for ( code.file in code.files ) {
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-dir.geoson <- file.path(data.directory,"training-data-geojson");
+my.seed <- 7654321;
+set.seed(my.seed);
 
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+dir.geoson           <- file.path(data.directory,"training-data-geojson");
 target.variable      <- 'VV';
 n.harmonics          <- 7;
 RData.trained.engine <- 'trained-fpc-FeatureEngine.RData';
@@ -108,6 +112,24 @@ gc();
 print( str(trained.fpc.FeatureEngine) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+DF.training[,"latitude_longitude"] <- apply(
+    X      = DF.training[,c("latitude","longitude")],
+    MARGIN = 1,
+    FUN    = function(x) { return(paste(x = x, collapse = "_")) }
+    );
+
+visualize.fpc.approximations(
+    featureEngine    = trained.fpc.FeatureEngine,
+    DF.variable      = DF.training,
+    location         = 'latitude_longitude',
+    date             = 'date',
+    land.cover       = 'land_cover',
+    variable         = target.variable,
+    n.locations      = 10,
+    DF.colour.scheme = DF.colour.scheme,
+    my.seed          = my.seed,
+    output.directory = "plot-fpc-approximations"
+    );
 
 ##################################################
 print( warnings() );
