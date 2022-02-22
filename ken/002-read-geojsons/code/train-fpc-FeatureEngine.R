@@ -197,7 +197,7 @@ train.fpc.FeatureEngine_score.scatterplot <- function(
         plot   = my.ggplot,
         dpi    = 150,
         height =  14,
-        width  =  16,
+        width  =  18,
         units  = 'in'
         );
 
