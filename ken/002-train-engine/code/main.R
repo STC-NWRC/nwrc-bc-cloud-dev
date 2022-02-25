@@ -56,7 +56,7 @@ my.seed <- 7654321;
 set.seed(my.seed);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-dir.geoson           <- file.path(data.directory,"training-data-geojson");
+dir.geoson           <- file.path(data.directory,"001-bay-of-quinte","training-data-geojson");
 target.variable      <- 'VV';
 n.harmonics          <- 7;
 RData.trained.engine <- 'trained-fpc-FeatureEngine.RData';
