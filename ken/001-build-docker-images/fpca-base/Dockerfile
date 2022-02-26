@@ -12,6 +12,7 @@ RUN conda install --quiet --yes \
       "r-fda" \
       "r-ggplot2" \
       "r-logger" \
+      "r-lubridate" \
       "r-ncdf4" \
       "r-R6" \
       "r-readr" \
