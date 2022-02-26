@@ -11,7 +11,6 @@ tiff2parquet <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     require(raster);
     require(stringr);
-    require(lubridate);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.dates <- tiff2parquet_get.dates(dir.tiffs = dir.tiffs);
@@ -217,7 +216,6 @@ tiff2parquet_get.dates <- function(
     ) {
 
     require(stringr);
-    require(lubridate);
 
     image.directories <- base::list.files(
         path    = dir.tiffs,
@@ -234,7 +232,7 @@ tiff2parquet_get.dates <- function(
 
     DF.output <- data.frame(
         directory = image.directories,
-        year      = lubridate::year(x = image.dates),
+        year      = format(x = image.dates, format = "%Y"),
         date      = image.dates
         );
 

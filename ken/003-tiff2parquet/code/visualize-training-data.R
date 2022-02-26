@@ -18,7 +18,6 @@ visualize.training.data <- function(
     cat(paste0("\n",thisFunctionName,"() starts.\n\n"));
 
     require(ggplot2);
-    require(lubridate);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( dir.exists(output.directory) ) {
@@ -33,7 +32,7 @@ visualize.training.data <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.training[,'year'] <- lubridate::year(DF.training[,'date']);
+    DF.training[,'year'] <- format(x = DF.training[,'date'], format = "%Y");
     DF.training[,'lat_lon_year'] <- apply(
         X      = DF.training[,c('latitude','longitude','year')],
         MARGIN = 1,

@@ -23,7 +23,6 @@ train.fpc.FeatureEngine <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     require(fpcFeatures);
-    require(lubridate);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     y_x <- paste(x = c(y, x), collapse = "_");
@@ -79,7 +78,7 @@ train.fpc.FeatureEngine <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.training[,'year'] <- lubridate::year(DF.training[,'date']);
+    DF.training[,'year'] <- format(x = DF.training[,'date'], format = "%Y");
 
     years <- unique(DF.training[,'year']);
     for ( temp.year in years ) {
