@@ -47,7 +47,8 @@ code.files <- c(
     "train-fpc-FeatureEngine.R",
     "visualize-fpc-approximations.R",
     "visualize-training-data.R",
-    "tiff2parquet.R"
+    "tiff2parquet.R",
+    "utils-rgb.R"
     );
 
 for ( code.file in code.files ) {
@@ -160,6 +161,19 @@ compute.fpc.scores(
     dir.parquets         = dir.parquets,
     n.cores              = n.cores,
     dir.scores           = dir.scores
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+plot.RGB.fpc.scores(
+    dir.scores           = dir.scores,
+    latitude             = 'latitude',
+    longitude            = 'longitude',
+    channel.red          = 'fpc_1',
+    channel.green        = 'fpc_2',
+    channel.blue         = 'fpc_3',
+    parquet.file.stem    = "DF-tidy-scores",
+    PNG.output.file.stem = "plot-RGB-fpc-scores",
+    dots.per.inch        = 300
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
