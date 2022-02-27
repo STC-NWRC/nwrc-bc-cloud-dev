@@ -105,8 +105,8 @@ tiff2parquet_persist <- function(
 
   # for ( batch.index in seq(1,2) ) {
   # for ( batch.index in seq(1,nrow(DF.batches)) ) {
-  # foreach ( batch.index = seq(1,nrow(DF.batches)) ) %dopar% {
-    foreach ( batch.index = seq(1,4) ) %dopar% {
+  # foreach ( batch.index = seq(1,4) ) %dopar% {
+    foreach ( batch.index = seq(1,nrow(DF.batches)) ) %dopar% {
 
         temp.year    <- DF.batches[batch.index,'year'];
         temp.batch   <- DF.batches[batch.index,'batch'];
