@@ -1,6 +1,7 @@
 
 tiff2parquet <- function(
-    dir.tiffs = NULL
+    dir.tiffs = NULL,
+    n.cores   = 1
     ) {
 
     thisFunctionName <- "tiff2parquet";
@@ -8,11 +9,11 @@ tiff2parquet <- function(
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###");
     cat(paste0("\n# ",thisFunctionName,"() starts.\n"));
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     require(raster);
     require(stringr);
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.dates <- tiff2parquet_get.dates(dir.tiffs = dir.tiffs);
 
     cat("\nstr(DF.dates)\n");
@@ -21,7 +22,7 @@ tiff2parquet <- function(
     cat("\nDF.dates\n");
     print( DF.dates   );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.tiff.filenames <- tiff2parquet_get.tiff.filenames(
         dir.tiffs = dir.tiffs,
         DF.dates  = DF.dates
@@ -44,10 +45,11 @@ tiff2parquet <- function(
         sink = "DF-tiff-filenames.parquet"
         );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     tiff2parquet_persist(
         dir.tiffs         = dir.tiffs,
-        DF.tiff.filenames = DF.tiff.filenames
+        DF.tiff.filenames = DF.tiff.filenames,
+        n.cores           = n.cores
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -61,9 +63,15 @@ tiff2parquet <- function(
 tiff2parquet_persist <- function(
     dir.tiffs         = NULL,
     DF.tiff.filenames = NULL,
-    dir.parquets      = "parquets"
+    dir.parquets      = "parquets",
+    n.cores           = 1
     ) {
 
+    require(doParallel);
+    require(foreach);
+    require(parallel);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.batches <- unique(DF.tiff.filenames[,c('year','batch')]);
     DF.batches[,'parquet'] <- apply(
         X      = DF.batches[,c('year','batch')],
@@ -89,16 +97,38 @@ tiff2parquet_persist <- function(
     cat("\nDF.batches[1:10,]\n");
     print( DF.batches[1:10,]   );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( !dir.exists(dir.parquets) ) { dir.create(path = dir.parquets, recursive = TRUE) }
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    doParallel::registerDoParallel(n.cores);
+
+  # for ( batch.index in seq(1,2) ) {
   # for ( batch.index in seq(1,nrow(DF.batches)) ) {
-    for ( batch.index in seq(1,2) ) {
+  # foreach ( batch.index = seq(1,nrow(DF.batches)) ) %dopar% {
+    foreach ( batch.index = seq(1,4) ) %dopar% {
 
         temp.year    <- DF.batches[batch.index,'year'];
         temp.batch   <- DF.batches[batch.index,'batch'];
         temp.parquet <- DF.batches[batch.index,'parquet'];
 
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        temp.log <- temp.parquet;
+        temp.log <- gsub(x = temp.log, pattern = "\\.parquet", replacement = ".log");
+        temp.log <- gsub(x = temp.log, pattern = "^data-",     replacement = "sink");
+
+        temp.sink <- file(description = file.path(dir.parquets,temp.log), open = "wt");
+        sink(file = temp.sink, type = "output" );
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
+
+        # print system time to log
+        cat(paste0("\n##### Sys.time(): ",Sys.time(),"\n"));
+
+        start.proc.time <- proc.time();
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         DF.tiffs <- DF.tiff.filenames[DF.tiff.filenames$year == temp.year,];
         DF.tiffs <- DF.tiffs[DF.tiffs$batch == temp.batch,];
 
@@ -137,9 +167,35 @@ tiff2parquet_persist <- function(
         base::remove(list = c("DF.data"))
         base::gc();
 
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        cat("\nshowConnections()\n");
+        print( showConnections()   );
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
+        # print warning messages to log
+        cat("\n##### warnings()\n")
+        print(warnings());
+
+        # print session info to log
+        cat("\n##### sessionInfo()\n")
+        print( sessionInfo() );
+
+        # print system time to log
+        cat(paste0("\n##### Sys.time(): ",Sys.time(),"\n"));
+
+        # print elapsed time to log
+        stop.proc.time <- proc.time();
+        cat("\n##### start.proc.time() - stop.proc.time()\n");
+        print( stop.proc.time - start.proc.time );
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        sink(file = NULL, type = "output" );
+        sink();
+
         }
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     return( NULL );
 
     }
