@@ -45,20 +45,23 @@ plot.RGB.fpc.scores <- function(
         score.files  <- list.files(path = dir.scores, pattern = temp.pattern);
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        # DF.scores <- data.frame();
-        # for ( temp.score.file in score.files ) {
-        #     DF.batch  <- arrow::read_parquet(file = file.path(dir.scores,temp.score.file));
-        #     DF.scores <- rbind(DF.scores,DF.batch);
-        #     }
-        # base::remove(list = c('DF.batch'));
-        # base::gc();
-        #
-        # arrow::write_parquet(
-        #     sink = paste0("DF-scores-",temp.year,".parquet"),
-        #     x    = DF.scores
-        #     );
+        parquet.scores <- paste0("DF-scores-",temp.year,".parquet");
+        if ( file.exists(parquet.scores) ) {
+            DF.scores <- arrow::read_parquet(file = parquet.scores);
+        } else {
+            DF.scores <- data.frame();
+            for ( temp.score.file in score.files ) {
+                DF.batch  <- arrow::read_parquet(file = file.path(dir.scores,temp.score.file));
+                DF.scores <- rbind(DF.scores,DF.batch);
+                }
+            base::remove(list = c('DF.batch'));
+            base::gc();
 
-        DF.scores <- arrow::read_parquet(file = paste0("DF-scores-",temp.year,".parquet"));
+            arrow::write_parquet(
+                sink = parquet.scores,
+                x    = DF.scores
+                );
+            }
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         temp.quantiles <- quantile(x = DF.scores[,channel.red], probs = c(0.01,0.99), na.rm = TRUE);
