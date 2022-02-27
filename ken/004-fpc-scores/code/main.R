@@ -65,8 +65,8 @@ cat(paste0("\n# n.cores = ",n.cores,"\n"));
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 dir.geoson   <- file.path(data.directory,"001-bay-of-quinte","training-data-geojson");
 dir.tiffs    <- file.path(data.directory,"001-bay-of-quinte","tiffs");
-dir.parquets <- "parquet-data";
-dir.scores   <- "parquet-scores";
+dir.parquets <- "parquets-data";
+dir.scores   <- "parquets-scores";
 
 target.variable      <- 'VV';
 n.harmonics          <- 7;
