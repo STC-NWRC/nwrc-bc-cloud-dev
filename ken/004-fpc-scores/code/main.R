@@ -42,6 +42,7 @@ code.files <- c(
     "getData-colour-scheme.R",
     "getData-geojson.R",
     "initializePlot.R",
+    "plot-RGB-fpc-scores.R",
     "preprocess-training-data.R",
     "train-fpc-FeatureEngine.R",
     "visualize-fpc-approximations.R",
