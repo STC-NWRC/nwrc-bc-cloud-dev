@@ -115,7 +115,7 @@ tiff2parquet_persist <- function(
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         temp.log <- temp.parquet;
         temp.log <- gsub(x = temp.log, pattern = "\\.parquet", replacement = ".log");
-        temp.log <- gsub(x = temp.log, pattern = "^data-",     replacement = "sink");
+        temp.log <- gsub(x = temp.log, pattern = "^data-",     replacement = "sink-");
 
         temp.sink <- file(description = file.path(dir.parquets,temp.log), open = "wt");
         sink(file = temp.sink, type = "output" );
