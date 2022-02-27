@@ -56,7 +56,6 @@ plot.RGB.fpc.scores <- function(
                 }
             base::remove(list = c('DF.batch'));
             base::gc();
-
             arrow::write_parquet(
                 sink = parquet.scores,
                 x    = DF.scores
