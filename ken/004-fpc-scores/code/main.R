@@ -65,8 +65,8 @@ cat(paste0("\n# n.cores = ",n.cores,"\n"));
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 dir.geoson   <- file.path(data.directory,"001-bay-of-quinte","training-data-geojson");
 dir.tiffs    <- file.path(data.directory,"001-bay-of-quinte","tiffs");
-dir.parquets <- "parquets";
-dir.scores   <- "fpc-scores";
+dir.parquets <- "parquet-data";
+dir.scores   <- "parquet-scores";
 
 target.variable      <- 'VV';
 n.harmonics          <- 7;
@@ -157,7 +157,8 @@ compute.fpc.scores(
     variable             = "4_VV",
     RData.trained.engine = RData.trained.engine,
     dir.parquets         = dir.parquets,
-    n.cores              = n.cores
+    n.cores              = n.cores,
+    dir.scores           = dir.scores
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
