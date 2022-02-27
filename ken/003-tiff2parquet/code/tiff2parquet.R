@@ -99,6 +99,7 @@ tiff2parquet_persist <- function(
         temp.batch   <- DF.batches[batch.index,'batch'];
         temp.parquet <- DF.batches[batch.index,'parquet'];
 
+        DF.tiffs <- DF.tiffs[DF.tiffs$year == temp.year,];
         DF.tiffs <- DF.tiff.filenames[DF.tiff.filenames$batch == temp.batch,];
 
         DF.data <- data.frame();
