@@ -75,28 +75,28 @@ n.harmonics          <- 7;
 RData.trained.engine <- 'trained-fpc-FeatureEngine.RData';
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-DF.colour.scheme <- getData.colour.scheme();
-
-cat("\nstr(DF.colour.scheme)\n");
-print( str(DF.colour.scheme)   );
-
-DF.training <- getData.geojson(
-    input.directory = dir.geoson,
-    parquet.output  = "DF-training-raw.parquet"
-    );
-
-DF.training <- preprocess.training.data(
-    DF.input         = DF.training,
-    DF.colour.scheme = DF.colour.scheme
-    );
+# DF.colour.scheme <- getData.colour.scheme();
+#
+# cat("\nstr(DF.colour.scheme)\n");
+# print( str(DF.colour.scheme)   );
+#
+# DF.training <- getData.geojson(
+#     input.directory = dir.geoson,
+#     parquet.output  = "DF-training-raw.parquet"
+#     );
+#
+# DF.training <- preprocess.training.data(
+#     DF.input         = DF.training,
+#     DF.colour.scheme = DF.colour.scheme
+#     );
 
 # arrow::write_parquet(
 #     sink = "DF-training.parquet",
 #     x    = DF.training
 #     );
 
-cat("\nstr(DF.training)\n");
-print( str(DF.training)   );
+# cat("\nstr(DF.training)\n");
+# print( str(DF.training)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # visualize.training.data(
@@ -108,21 +108,21 @@ print( str(DF.training)   );
 # gc();
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-trained.fpc.FeatureEngine <- train.fpc.FeatureEngine(
-    DF.training      = DF.training,
-    x                = 'longitude',
-    y                = 'latitude',
-    land.cover       = 'land_cover',
-    date             = 'date',
-    variable         = target.variable,
-    min.date         = as.Date("2019-01-15"),
-    max.date         = as.Date("2019-12-16"),
-    n.harmonics      = n.harmonics,
-    DF.colour.scheme = DF.colour.scheme,
-    RData.output     = RData.trained.engine
-    );
-gc();
-print( str(trained.fpc.FeatureEngine) );
+# trained.fpc.FeatureEngine <- train.fpc.FeatureEngine(
+#     DF.training      = DF.training,
+#     x                = 'longitude',
+#     y                = 'latitude',
+#     land.cover       = 'land_cover',
+#     date             = 'date',
+#     variable         = target.variable,
+#     min.date         = as.Date("2019-01-15"),
+#     max.date         = as.Date("2019-12-16"),
+#     n.harmonics      = n.harmonics,
+#     DF.colour.scheme = DF.colour.scheme,
+#     RData.output     = RData.trained.engine
+#     );
+# gc();
+# print( str(trained.fpc.FeatureEngine) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # DF.training[,"latitude_longitude"] <- apply(
@@ -145,29 +145,30 @@ print( str(trained.fpc.FeatureEngine) );
 #     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-tiff2parquet(
-    dir.tiffs    = dir.tiffs,
-    n.cores      = n.cores,
-    dir.parquets = dir.parquets
-    );
+# tiff2parquet(
+#     dir.tiffs    = dir.tiffs,
+#     n.cores      = n.cores,
+#     dir.parquets = dir.parquets
+#     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-compute.fpc.scores(
-    x                    = 'longitude',
-    y                    = 'latitude',
-    date                 = 'date',
-    variable             = "4_VV",
-    RData.trained.engine = RData.trained.engine,
-    dir.parquets         = dir.parquets,
-    n.cores              = n.cores,
-    dir.scores           = dir.scores
-    );
+# compute.fpc.scores(
+#     x                    = 'longitude',
+#     y                    = 'latitude',
+#     date                 = 'date',
+#     variable             = "4_VV",
+#     RData.trained.engine = RData.trained.engine,
+#     dir.parquets         = dir.parquets,
+#     n.cores              = n.cores,
+#     dir.scores           = dir.scores
+#     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 plot.RGB.fpc.scores(
     dir.scores           = dir.scores,
     latitude             = 'latitude',
     longitude            = 'longitude',
+    digits               = 4,
     channel.red          = 'fpc_1',
     channel.green        = 'fpc_2',
     channel.blue         = 'fpc_3',

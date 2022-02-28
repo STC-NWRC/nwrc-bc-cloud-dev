@@ -10,5 +10,5 @@ rgb.transform <- function(
     if ( is.matrix(x) ) {
         temp <- matrix(temp, nrow = nrow(x), ncol = ncol(x));
         }
-    return(temp);
+    return(as.numeric(temp));
     }
