@@ -102,7 +102,14 @@ plot.RGB.fpc.scores <- function(
 
         DF.scores <- arrow::read_parquet(file = paste0("DF-scores-",temp.year,".parquet"));
 
-        DF.scores <- plot.RGB.fpc.scores_rotate(
+        # DF.scores <- plot.RGB.fpc.scores_rotate(
+        #     DF.scores = DF.scores,
+        #     latitude  = latitude,
+        #     longitude = longitude,
+        #     digits    = digits
+        #     );
+
+        DF.scores <- plot.RGB.fpc.scores_resample(
             DF.scores = DF.scores,
             latitude  = latitude,
             longitude = longitude,
@@ -138,6 +145,94 @@ plot.RGB.fpc.scores <- function(
     }
 
 ##################################################
+plot.RGB.fpc.scores_resample <- function(
+    DF.scores = NULL,
+    latitude  =  "latitude",
+    longitude = "longitude",
+    digits    = 4
+    ) {
+
+    range.lat <- range(DF.scores[, latitude]);
+    range.lon <- range(DF.scores[,longitude]);
+
+    ratio.lat.to.lon <- sum( c(-1,1) * range.lat ) / sum( c(-1,1) * range.lon );
+    n.partitions.lon <- sqrt( nrow(DF.scores) / ratio.lat.to.lon );
+    n.partitions.lat <- n.partitions.lon * ratio.lat.to.lon;
+
+    grid.size.lat <- sum( c(-1,1) * range.lat ) / n.partitions.lat;
+    grid.size.lon <- sum( c(-1,1) * range.lon ) / n.partitions.lon;
+    max.distance  <- 1.2 * sqrt(grid.size.lat^2 + grid.size.lon^2);
+
+    new.lats <- seq( min(range.lat), max(range.lat), grid.size.lat );
+    new.lons <- seq( min(range.lon), max(range.lon), grid.size.lon );
+
+    unique.original.lats <- unique(DF.scores[,latitude]);
+    DF.dictionary.lats <- data.frame(new.lat = new.lats, dummy = rep(NA,length(new.lats)));
+    DF.dictionary.lats[,'original.lat'] <- apply(
+        X      = DF.dictionary.lats,
+        MARGIN = 1,
+        FUN    = function(x) {
+            min.index <- which.min(abs(x[1]-unique.original.lats));
+            return(unique.original.lats[min.index])
+            }
+        );
+    DF.dictionary.lats <- DF.dictionary.lats[,c('new.lat','original.lat')];
+
+    unique.original.lons <- unique(DF.scores[,longitude]);
+    DF.dictionary.lons <- data.frame(new.lon = new.lons, dummy = rep(NA,length(new.lons)));
+    DF.dictionary.lons[,'original.lon'] <- apply(
+        X      = DF.dictionary.lons,
+        MARGIN = 1,
+        FUN    = function(x) {
+            min.index <- which.min(abs(x[1]-unique.original.lons));
+            return(unique.original.lons[min.index])
+            }
+        );
+    DF.dictionary.lons <- DF.dictionary.lons[,c('new.lon','original.lon')];
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.output <- base::expand.grid(
+        new.lon = new.lons,
+        new.lat = new.lats
+        );
+    attr(DF.output,"out.attrs") <- NULL;
+
+    SF.output <- DF.output[,c('new.lon','new.lat')] %>% sf::st_as_sf(coords = c(1,2));
+    SF.scores <- DF.scores[,c(longitude,latitude )] %>% sf::st_as_sf(coords = c(1,2));
+
+    SF.output <- cbind(SF.output,DF.output);
+    SF.scores <- cbind(SF.scores,DF.scores);
+
+    SF.joint <- sf::st_join(
+        x    = SF.output,
+        y    = SF.scores,
+        join = sf::st_is_within_distance,
+        dist = max.distance,
+        left = FALSE
+        );
+
+    DF.output <- merge(x = DF.output, y = DF.dictionary.lats, by = "new.lat");
+    DF.output <- merge(x = DF.output, y = DF.dictionary.lons, by = "new.lon");
+
+    DF.output <- merge(
+        x    = DF.output,
+        y    = DF.scores,
+        by.x = c('original.lat','original.lon'),
+        by.y = c(latitude,longitude)
+        );
+
+    DF.output <- DF.output[,setdiff(colnames(DF.output),c('original.lat','original.lon'))];
+    colnames(DF.output) <- gsub(x = colnames(DF.output), pattern = "^new.lat$", replacement =  latitude);
+    colnames(DF.output) <- gsub(x = colnames(DF.output), pattern = "^new.lon$", replacement = longitude);
+    DF.output <- DF.output[,c(latitude,longitude,setdiff(colnames(DF.output),c(latitude,longitude)))];
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    base::remove(list = c("DF.dictionary.lats","DF.dictionary.lons"));
+    base::gc();
+    return( DF.output );
+
+    }
+
 plot.RGB.fpc.scores_rotate <- function(
     DF.scores = NULL,
     latitude  =  "latitude",
