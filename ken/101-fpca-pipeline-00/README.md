@@ -22,8 +22,8 @@ This task is the first prototype of the GCP FPCA workflow.
 
 # Name of the DAG:
 
-Look up the wokflow in the Airflow UI under the name: *fpca_gke*
+Look up the wokflow in the Airflow UI under the name: **fpca_gke**
 
 # Output Google Storage bucket:
 
-The output is written to the following Google Storage bucket: gs://fpca-336015-xbucket/output
+The output is written to the following Google Storage bucket: **gs://fpca-336015-xbucket/output**
