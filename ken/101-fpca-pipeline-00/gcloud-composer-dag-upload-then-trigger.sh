@@ -24,4 +24,6 @@ sleep 20
 echo; echo Executing: gcloud composer environments run dags trigger
 gcloud composer environments run ${ENVIRONMENT_NAME} \
     --location ${LOCATION} \
-    trigger_dag -- fpca_gke --run_id=nwrc
+    # trigger_dag -- fpca_gke --run_id=nwrc
+    trigger_dag -- fpca_gke
+
