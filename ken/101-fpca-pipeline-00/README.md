@@ -1,9 +1,9 @@
 GCP FPCA Pipeline Prototype v00
 ==============================
 
-This task is the first prototype of the GCP FPCA pipeline.
+This task is the first prototype of the GCP FPCA workflow.
 
-# How to run the pipeline:
+# How to run the workflow:
 
 1.  Create a Google Composer environment:
     ```
