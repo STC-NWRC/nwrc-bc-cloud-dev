@@ -26,4 +26,4 @@ Look up the wokflow in the Airflow UI under the name: **fpca_gke**
 
 # Output Google Storage bucket:
 
-The output is written to the following Google Storage bucket: **gs://fpca-336015-xbucket/output**
+Output is written to the following Google Storage bucket: **gs://fpca-336015-xbucket/output**
