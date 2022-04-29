@@ -19,3 +19,7 @@ This task is the first prototype of the GCP FPCA workflow.
     ```
     sh ./gcloud-composer-environments-delete.sh
     ```
+
+# Name of the DAG: fpca_gke
+
+# Output Google Storage bucket: gs://fpca-336015-xbucket/output
