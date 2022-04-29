@@ -12,7 +12,7 @@ This task is the first prototype of the GCP FPCA workflow.
 
 2.  Upload the DAG of the pipeline, and trigger the corresponding Composer workflow:
     ```
-    sh ./gcloud-composer-dag-upload.sh
+    sh ./gcloud-composer-dag-upload-then-trigger.sh
     ```
 
 3.  When the pipeline has finished execution, delete the Composer environment:
