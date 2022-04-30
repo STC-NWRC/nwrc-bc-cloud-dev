@@ -16,14 +16,14 @@ gcloud composer environments storage dags import \
     --source dag-fpca.py
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-echo; echo Executing: sleep 20
-sleep 20
+echo; echo Executing: sleep 60
+sleep 60
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 ### trigger the workflow
 echo; echo Executing: gcloud composer environments run dags trigger
 gcloud composer environments run ${ENVIRONMENT_NAME} \
     --location ${LOCATION} \
-    # trigger_dag -- fpca_gke --run_id=nwrc
-    trigger_dag -- fpca_gke
-
+    trigger_dag -- fpca_gke --run_id=`date "+%F-%H-%M-%S"`
+    # dags trigger -- fpca_gke --run_id=`date "+%F-%H-%M-%S"`
+    # trigger_dag -- fpca_gke
