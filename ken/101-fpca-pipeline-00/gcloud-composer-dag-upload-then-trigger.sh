@@ -21,7 +21,7 @@ sleep 60
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 ### trigger the workflow
-echo; echo Executing: gcloud composer environments run dags trigger
+echo; echo Executing: gcloud composer environments run ... trigger_dag
 gcloud composer environments run ${ENVIRONMENT_NAME} \
     --location ${LOCATION} \
     trigger_dag -- fpca_gke --run_id=`date "+%F-%H-%M-%S"`
