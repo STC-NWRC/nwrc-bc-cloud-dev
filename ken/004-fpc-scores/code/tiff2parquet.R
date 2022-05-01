@@ -152,7 +152,8 @@ tiff2parquet_persist <- function(
             cat("\ntemp.path\n");
             print( temp.path   );
             temp.stack  <- raster::stack(x = temp.path);
-            temp.values <- raster::getValues(x = temp.stack);
+            # temp.values <- raster::getValues(x = temp.stack);
+            temp.values <- cbind(raster::coordinates(obj = temp.stack),raster::getValues(x = temp.stack));
             colnames(temp.values) <- tiff2parquet_clean.colnames(
                 x         = colnames(temp.values),
                 directory = temp.dir
