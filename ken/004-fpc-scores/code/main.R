@@ -78,15 +78,17 @@ n.harmonics          <- 7;
 RData.trained.engine <- 'trained-fpc-FeatureEngine.RData';
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-DF.colour.scheme <- getData.colour.scheme();
-
-cat("\nstr(DF.colour.scheme)\n");
-print( str(DF.colour.scheme)   );
-
 DF.training <- getData.geojson(
     input.directory = dir.geoson,
     parquet.output  = "DF-training-raw.parquet"
     );
+
+DF.colour.scheme <- getData.colour.scheme(
+    DF.training = DF.training
+    );
+
+cat("\nstr(DF.colour.scheme)\n");
+print( str(DF.colour.scheme)   );
 
 DF.training <- preprocess.training.data(
     DF.input         = DF.training,
