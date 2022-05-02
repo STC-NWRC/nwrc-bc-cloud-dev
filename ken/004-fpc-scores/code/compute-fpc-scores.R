@@ -107,6 +107,12 @@ compute.fpc.scores_inner <- function(
 
         print("A-4");
 
+        cat("\ny_x\n");
+        print( y_x   );
+
+        cat("\nstr(DF.batch)\n");
+        print( str(DF.batch)   );
+
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         trained.fpc.FeatureEngine <- readRDS(file = RData.trained.engine);
 
