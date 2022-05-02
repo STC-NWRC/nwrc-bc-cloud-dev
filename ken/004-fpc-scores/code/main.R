@@ -73,7 +73,7 @@ dir.tiffs    <- file.path(data.directory,"002-williston-a","tiffs");
 dir.parquets <- "parquets-data";
 dir.scores   <- "parquets-scores";
 
-target.variable      <- 'VV';
+target.variable      <- 'VH'; # 'VV';
 n.harmonics          <- 7;
 RData.trained.engine <- 'trained-fpc-FeatureEngine.RData';
 
@@ -161,7 +161,7 @@ compute.fpc.scores(
     x                    = 'x',
     y                    = 'y',
     date                 = 'date',
-    variable             = "VV",
+    variable             = target.variable,
     RData.trained.engine = RData.trained.engine,
     dir.parquets         = dir.parquets,
     n.cores              = n.cores,
@@ -171,22 +171,22 @@ compute.fpc.scores(
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 persist.fpc.scores(
     dir.scores = dir.scores,
-    variable   = "VV"
+    variable   = target.variable
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 plot.RGB.fpc.scores(
     dir.tiffs            = dir.tiffs,
     dir.scores           = dir.scores,
-    variable             = 'VV',
+    variable             = target.variable,
     x                    = 'x',
     y                    = 'y',
     digits               = 4,
     channel.red          = 'fpc_1',
     channel.green        = 'fpc_2',
     channel.blue         = 'fpc_3',
-    parquet.file.stem    = 'DF-tidy-scores-VV',
-    PNG.output.file.stem = 'plot-RGB-fpc-scores-VV',
+    parquet.file.stem    = paste0('DF-tidy-scores-',     target.variable),
+    PNG.output.file.stem = paste0('plot-RGB-fpc-scores-',target.variable),
     dots.per.inch        = 300
     );
 
