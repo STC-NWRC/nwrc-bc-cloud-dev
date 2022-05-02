@@ -66,8 +66,10 @@ n.cores   <- ifelse(test = is.macOS, yes = 2, no = parallel::detectCores() - 1);
 cat(paste0("\n# n.cores = ",n.cores,"\n"));
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-dir.geoson   <- file.path(data.directory,"001-bay-of-quinte","training-data-geojson");
-dir.tiffs    <- file.path(data.directory,"001-bay-of-quinte","tiffs");
+# dir.geoson <- file.path(data.directory,"001-bay-of-quinte","training-data-geojson");
+# dir.tiffs  <- file.path(data.directory,"001-bay-of-quinte","tiffs");
+dir.geoson   <- file.path(data.directory,"002-williston-a","training-data-geojson");
+dir.tiffs    <- file.path(data.directory,"002-williston-a","tiffs");
 dir.parquets <- "parquets-data";
 dir.scores   <- "parquets-scores";
 
