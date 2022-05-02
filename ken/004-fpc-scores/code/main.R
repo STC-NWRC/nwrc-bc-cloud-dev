@@ -126,24 +126,24 @@ gc();
 print( str(trained.fpc.FeatureEngine) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# DF.training[,"latitude_longitude"] <- apply(
-#     X      = DF.training[,c("latitude","longitude")],
-#     MARGIN = 1,
-#     FUN    = function(x) { return(paste(x = x, collapse = "_")) }
-#     );
-#
-# visualize.fpc.approximations(
-#     featureEngine    = trained.fpc.FeatureEngine,
-#     DF.variable      = DF.training,
-#     location         = 'latitude_longitude',
-#     date             = 'date',
-#     land.cover       = 'land_cover',
-#     variable         = target.variable,
-#     n.locations      = 10,
-#     DF.colour.scheme = DF.colour.scheme,
-#     my.seed          = my.seed,
-#     output.directory = "plot-fpc-approximations"
-#     );
+DF.training[,"latitude_longitude"] <- apply(
+    X      = DF.training[,c("latitude","longitude")],
+    MARGIN = 1,
+    FUN    = function(x) { return(paste(x = x, collapse = "_")) }
+    );
+
+visualize.fpc.approximations(
+    featureEngine    = trained.fpc.FeatureEngine,
+    DF.variable      = DF.training,
+    location         = 'latitude_longitude',
+    date             = 'date',
+    land.cover       = 'land_cover',
+    variable         = target.variable,
+    n.locations      = 10,
+    DF.colour.scheme = DF.colour.scheme,
+    my.seed          = my.seed,
+    output.directory = "plot-fpc-approximations"
+    );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 tiff2parquet(
@@ -153,16 +153,16 @@ tiff2parquet(
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# compute.fpc.scores(
-#     x                    = 'longitude',
-#     y                    = 'latitude',
-#     date                 = 'date',
-#     variable             = "VV",
-#     RData.trained.engine = RData.trained.engine,
-#     dir.parquets         = dir.parquets,
-#     n.cores              = n.cores,
-#     dir.scores           = dir.scores
-#     );
+compute.fpc.scores(
+    x                    = 'x',
+    y                    = 'y',
+    date                 = 'date',
+    variable             = "VV",
+    RData.trained.engine = RData.trained.engine,
+    dir.parquets         = dir.parquets,
+    n.cores              = n.cores,
+    dir.scores           = dir.scores
+    );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 persist.fpc.scores(dir.scores = dir.scores);
