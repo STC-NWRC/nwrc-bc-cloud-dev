@@ -174,14 +174,15 @@ persist.fpc.scores(
 plot.RGB.fpc.scores(
     dir.tiffs            = dir.tiffs,
     dir.scores           = dir.scores,
-    latitude             = 'latitude',
-    longitude            = 'longitude',
+    variable             = 'VV',
+    x                    = 'x',
+    y                    = 'y',
     digits               = 4,
     channel.red          = 'fpc_1',
     channel.green        = 'fpc_2',
     channel.blue         = 'fpc_3',
-    parquet.file.stem    = "DF-tidy-scores",
-    PNG.output.file.stem = "plot-RGB-fpc-scores",
+    parquet.file.stem    = 'DF-tidy-scores-VV',
+    PNG.output.file.stem = 'plot-RGB-fpc-scores-VV',
     dots.per.inch        = 300
     );
 
