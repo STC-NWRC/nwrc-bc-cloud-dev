@@ -169,6 +169,7 @@ persist.fpc.scores(dir.scores = dir.scores);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # plot.RGB.fpc.scores(
+#     dir.tiffs            = dir.tiffs,
 #     dir.scores           = dir.scores,
 #     latitude             = 'latitude',
 #     longitude            = 'longitude',
