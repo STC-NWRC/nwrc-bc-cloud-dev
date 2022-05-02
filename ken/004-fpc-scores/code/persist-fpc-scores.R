@@ -1,6 +1,7 @@
 
 persist.fpc.scores <- function(
-    dir.scores = NULL
+    dir.scores = NULL,
+    variable   = NULL
     ) {
 
     thisFunctionName <- "persist.fpc.scores";
@@ -13,7 +14,7 @@ persist.fpc.scores <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     years <- gsub(
         x = unique(stringr::str_extract(
-            string  = list.files(path = dir.scores, pattern = "^scores-"),
+            string  = list.files(path = dir.scores, pattern = paste0("^scores-",variable,"-")),
             pattern = "-[0-9]{4}-"
             )),
         pattern     = "-",
@@ -24,11 +25,11 @@ persist.fpc.scores <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     for ( temp.year in years ) {
 
-        temp.pattern <- paste0("^scores-",temp.year,"-");
+        temp.pattern <- paste0("^scores-",variable,"-",temp.year,"-");
         score.files  <- list.files(path = dir.scores, pattern = temp.pattern);
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        parquet.scores <- paste0("DF-scores-",temp.year,".parquet");
+        parquet.scores <- paste0("DF-scores-",variable,"-",temp.year,".parquet");
         if ( file.exists(parquet.scores) ) {
             # DF.scores <- arrow::read_parquet(file = parquet.scores);
         } else {
