@@ -1,5 +1,6 @@
 
 plot.RGB.fpc.scores <- function(
+    dir.tiffs            = NULL,
     dir.scores           = NULL,
     latitude             = 'latitude',
     longitude            = 'longitude',
@@ -18,6 +19,9 @@ plot.RGB.fpc.scores <- function(
 
     require(arrow);
     require(terrainr);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    crs.object <- plot.RGB.fpc.scores_get.crs(dir.tiffs = dir.tiffs);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     years <- gsub(
@@ -109,17 +113,18 @@ plot.RGB.fpc.scores <- function(
         #     digits    = digits
         #     );
 
-        DF.scores <- plot.RGB.fpc.scores_resample(
-            DF.scores = DF.scores,
-            latitude  = latitude,
-            longitude = longitude,
-            digits    = digits
-            );
+        # DF.scores <- plot.RGB.fpc.scores_resample(
+        #     DF.scores = DF.scores,
+        #     latitude  = latitude,
+        #     longitude = longitude,
+        #     digits    = digits
+        #     );
 
       # plot.RGB.fpc.scores_geom.raster(
         plot.RGB.fpc.scores_terrainr(
             PNG.output        = PNG.output,
             DF.tidy.scores    = DF.scores,
+            crs.object        = crs.object,
             year              = temp.year,
             latitude          = latitude,
             longitude         = longitude,
@@ -145,6 +150,23 @@ plot.RGB.fpc.scores <- function(
     }
 
 ##################################################
+plot.RGB.fpc.scores_get.crs <- function(
+    dir.tiffs = NULL
+    ) {
+    dir.date  <- list.files(
+        path    = dir.tiffs,
+        pattern = "[0-9]{8}"
+        )[1];
+    file.raster <- list.files(
+        path    = file.path(dir.tiffs,dir.date),
+        pattern = "\\.tif{1,2}$"
+        )[1];
+    cat("\nfile.raster\n");
+    print( file.raster   );
+    obj.raster  <- raster::stack(file.path(dir.tiffs,dir.date,file.raster));
+    return( raster::crs(obj.raster) );
+    }
+
 plot.RGB.fpc.scores_resample <- function(
     DF.scores = NULL,
     latitude  =  "latitude",
@@ -371,6 +393,7 @@ plot.RGB.fpc.scores_geom.raster <- function(
 
 plot.RGB.fpc.scores_terrainr <- function(
     DF.tidy.scores    = NULL,
+    crs.object        = NULL,
     year              = NULL,
     latitude          = 'latitude',
     longitude         = 'longitude',
@@ -428,7 +451,7 @@ plot.RGB.fpc.scores_terrainr <- function(
             )
         );
 
-    my.ggplot <- my.ggplot + ggplot2::coord_sf(crs = 4326);
+    my.ggplot <- my.ggplot + ggplot2::coord_sf(crs = crs.object);
 
     range.y <- sum(range(DF.temp[,'latitude' ]) * c(-1,1));
     range.x <- sum(range(DF.temp[,'longitude']) * c(-1,1));
