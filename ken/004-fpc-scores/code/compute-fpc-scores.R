@@ -91,6 +91,7 @@ compute.fpc.scores_inner <- function(
         print("A-1");
 
         DF.batch <- arrow::read_parquet(file.path(dir.parquets,data.parquet));
+        colnames(DF.batch) <- gsub(x = colnames(DF.batch), pattern = "^[0-9]+_", replacement = "");
 
         print("A-2");
 
