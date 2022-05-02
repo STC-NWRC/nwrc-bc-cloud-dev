@@ -88,18 +88,29 @@ compute.fpc.scores_inner <- function(
         start.proc.time <- proc.time();
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        print("A-1");
+
         DF.batch <- arrow::read_parquet(file.path(dir.parquets,data.parquet));
+
+        print("A-2");
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         y_x <- paste0(y,'_',x);
+
+        print("A-3");
+
         DF.batch[,y_x] <- apply(
             X      = DF.batch[,c(y,x)],
             MARGIN = 1,
             FUN    = function(z) {return(paste0(z[1],'_',z[2]))}
             );
 
+        print("A-4");
+
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         trained.fpc.FeatureEngine <- readRDS(file = RData.trained.engine);
+
+        print("A-5");
 
         DF.scores <- trained.fpc.FeatureEngine$transform(
             newdata  = DF.batch[,c(y_x,date,variable)],
@@ -108,24 +119,46 @@ compute.fpc.scores_inner <- function(
             variable = variable
             );
 
+        print("A-6");
+
         bspline.colnames <- grep(x = colnames(DF.scores), pattern = "^[0-9]+$", value = TRUE);
         DF.scores        <- DF.scores[,setdiff(colnames(DF.scores),bspline.colnames)];
 
+        print("A-7");
+
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         DF.scores[,y     ] <- as.numeric(gsub(x = DF.scores[,y_x], pattern = "_.+", replacement = ""));
+
+        print("A-8");
+
         DF.scores[,x     ] <- as.numeric(gsub(x = DF.scores[,y_x], pattern = ".+_", replacement = ""));
+
+        print("A-9");
+
         DF.scores[,'year'] <- as.numeric(DF.scores[,'year']);
+
+        print("A-10");
+
         DF.scores <- DF.scores[,c(y,x,setdiff(colnames(DF.scores),c(y,x,y_x)))];
+
+        print("A-11");
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         scores.parquet <- gsub(x = data.parquet, pattern = "^data-", replacement = "scores-");
+
+        print("A-12");
+
         arrow::write_parquet(
             sink = file.path(dir.scores,scores.parquet),
             x    = DF.scores
             );
 
+        print("A-12");
+
         base::remove(list = c("trained.fpc.FeatureEngine","DF.batch","DF.scores","bspline.colnames","scores.parquet"));
         base::gc();
+
+        print("A-12");
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         cat("\nshowConnections()\n");
