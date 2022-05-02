@@ -215,15 +215,15 @@ plot.RGB.fpc.scores_terrainr <- function(
 
     my.ggplot <- my.ggplot + ggplot2::coord_sf(crs = crs.object);
 
-    range.y <- sum(range(DF.temp[,'x']) * c(-1,1));
-    range.x <- sum(range(DF.temp[,'y']) * c(-1,1));
+    # range.y <- sum(range(DF.temp[,'x']) * c(-1,1));
+    # range.x <- sum(range(DF.temp[,'y']) * c(-1,1));
 
     ggplot2::ggsave(
         filename = PNG.output,
         plot     = my.ggplot,
         # scale  = 1,
         width    = 16,
-        height   = 16 * (range.y/range.x),
+        height   = 16, # 16 * (range.y/range.x),
         units    = "in",
         dpi      = dots.per.inch
         );
