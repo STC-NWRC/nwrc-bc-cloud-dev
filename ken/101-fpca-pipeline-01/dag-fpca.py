@@ -165,8 +165,8 @@ with models.DAG(JOB_NAME,
     fpca_command = """
     echo;echo "sleep 10" ; sleep 10 ;
     echo;echo "ls -l ${SERVICE_ACCOUNT_KEY_JSON}" ; ls -l ${SERVICE_ACCOUNT_KEY_JSON} ;
-    echo;echo EXTERNAL_BUCKET=${EXTERNAL_BUCKET} ;
     echo;echo "gcloud auth activate-service-account --key-file ${SERVICE_ACCOUNT_KEY_JSON}" ; gcloud auth activate-service-account --key-file ${SERVICE_ACCOUNT_KEY_JSON} ;
+    echo;echo EXTERNAL_BUCKET=${EXTERNAL_BUCKET} ;
     echo;echo which docker ; which docker;
     echo;echo which R ; which R ;
     echo;echo R -e "library(help=arrow)" ; R -e "library(help=arrow)";
