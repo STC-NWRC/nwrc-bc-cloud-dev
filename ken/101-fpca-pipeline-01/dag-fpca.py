@@ -222,8 +222,6 @@ with models.DAG(JOB_NAME,
     fpca_tasks = []
     for BUCKET_NAME in bucket_list:
 
-        my_disk_claim = 'pvc-' + BUCKET_NAME;
-
         fpca_tasks.append(kubernetes_pod.KubernetesPodOperator(
             task_id   = 'fpca_{}'.format(BUCKET_NAME),
             name      = 'fpca_{}'.format(BUCKET_NAME),
