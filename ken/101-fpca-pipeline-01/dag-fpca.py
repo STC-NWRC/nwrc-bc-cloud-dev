@@ -14,7 +14,8 @@ from airflow.kubernetes.secret import Secret
 
 import os
 
-bucket_list = ['fpca-bay-of-quinte-test','fpca-williston-a']
+bucket_list     = ['fpca-bay-of-quinte-test','fpca-williston-a']
+external_bucket = 'fpca-336015-xbucket'
 
 JOB_NAME = 'fpca_gke'
 
@@ -161,38 +162,36 @@ with models.DAG(JOB_NAME,
     sudo gcloud container node-pools delete ${NODE_POOL} --zone ${COMPOSER_GKE_ZONE} --cluster ${COMPOSER_GKE_NAME} --quiet
     """
 
-    # fpca_command = 'echo \'Sleeping ...\'; sleep 10; echo;echo "ls -l ${SERVICE_ACCOUNT_KEY_JSON}" ; ls -l ${SERVICE_ACCOUNT_KEY_JSON} ; echo;echo "gcloud auth activate-service-account --key-file ${SERVICE_ACCOUNT_KEY_JSON}" ; gcloud auth activate-service-account --key-file ${SERVICE_ACCOUNT_KEY_JSON} ; echo;echo "gsutil ls gs://{BUCKET_NAME}" ; gsutil ls gs://{BUCKET_NAME} ; echo;echo which docker ; which docker; echo;echo which R ; which R ; echo;echo R -e "library(help=arrow)" ; R -e "library(help=arrow)"; echo;echo R -e "library(help=fpcFeatures)" ; R -e "library(help=fpcFeatures)"; echo;echo ls -l /home/airflow/gcs/data/ ; ls -l /home/airflow/gcs/data/ ; echo;echo ls -l /datatransfer/TrainingData_Geojson ; ls -l /datatransfer/TrainingData_Geojson/ ; echo;echo mkdir github ; mkdir github ; echo;echo cd github ; cd github ; echo;echo git clone https://github.com/STC-NWRC/bay-of-quinte.git ; git clone https://github.com/STC-NWRC/bay-of-quinte.git ; echo;echo cd bay-of-quinte ; cd bay-of-quinte ; echo;echo chmod ugo+x run-main.sh ; chmod ugo+x run-main.sh ;  echo;echo ./run-main.sh ; echo;echo ./run-main.sh ; echo;echo pwd ; pwd ; echo;echo "ls -l .." ; ls -l .. ; echo;echo "ls -l ../.." ; ls -l ../.. ; echo;echo "tree ../.." ; tree ../.. ; echo;echo "cat ../../gittmp/bay-of-quinte/output/stdout.R.main" ; cat ../../gittmp/bay-of-quinte/output/stdout.R.main ; echo;echo "cd ../.." ; cd ../.. ; echo;echo pwd ; pwd ; echo;echo ls -l ; ls -l ; mkdir /datatransfer/output ; echo;echo rm -rf /datatransfer/output/output; rm -rf /datatransfer/output/output ; echo;echo cp -r gittmp/bay-of-quinte/output /datatransfer/output/output ; cp -r gittmp/bay-of-quinte/output /datatransfer/output/output ; echo;echo "ls -l /datatransfer/output/" ; ls -l /datatransfer/output/ ; echo;echo "ls -l /datatransfer/output/output" ; ls -l /datatransfer/output/output ; echo;echo \'Done!\''
-
     fpca_command = """
     echo;echo "sleep 10" ; sleep 10 ;
     echo;echo "ls -l ${SERVICE_ACCOUNT_KEY_JSON}" ; ls -l ${SERVICE_ACCOUNT_KEY_JSON} ;
+    echo;echo EXTERNAL_BUCKET=${EXTERNAL_BUCKET} ;
     echo;echo "gcloud auth activate-service-account --key-file ${SERVICE_ACCOUNT_KEY_JSON}" ; gcloud auth activate-service-account --key-file ${SERVICE_ACCOUNT_KEY_JSON} ;
-    echo;echo "gsutil ls gs://{BUCKET_NAME}" ; gsutil ls gs://{BUCKET_NAME} ;
     echo;echo which docker ; which docker;
     echo;echo which R ; which R ;
     echo;echo R -e "library(help=arrow)" ; R -e "library(help=arrow)";
     echo;echo R -e "library(help=fpcFeatures)" ; R -e "library(help=fpcFeatures)";
     echo;echo ls -l /home/airflow/gcs/data/ ; ls -l /home/airflow/gcs/data/ ;
+    echo;echo "gsutil ls gs://{BUCKET_NAME}" ; gsutil ls gs://{BUCKET_NAME} ;
+    echo;echo "mkdir /datatransfer" ; mkdir /datatransfer;
+    echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer ;
     echo;echo ls -l /datatransfer/TrainingData_Geojson ; ls -l /datatransfer/TrainingData_Geojson/ ;
     echo;echo mkdir github ; mkdir github ;
     echo;echo cd github ; cd github ;
     echo;echo git clone https://github.com/STC-NWRC/bay-of-quinte.git ; git clone https://github.com/STC-NWRC/bay-of-quinte.git ;
     echo;echo cd bay-of-quinte ; cd bay-of-quinte ;
     echo;echo chmod ugo+x run-main.sh ; chmod ugo+x run-main.sh ;
-    echo;echo ./run-main.sh ; echo;echo ./run-main.sh ;
+    echo;echo ./run-main.sh ; ./run-main.sh ;
     echo;echo pwd ; pwd ;
     echo;echo "ls -l .." ; ls -l .. ;
     echo;echo "ls -l ../.." ; ls -l ../.. ;
-    echo;echo "tree ../.." ; tree ../.. ;
     echo;echo "cat ../../gittmp/bay-of-quinte/output/stdout.R.main" ; cat ../../gittmp/bay-of-quinte/output/stdout.R.main ;
     echo;echo "cd ../.." ; cd ../.. ;
     echo;echo pwd ; pwd ;
     echo;echo ls -l ; ls -l ;
-    echo;echo "mkdir /datatransfer/output" ; mkdir /datatransfer/output ;
-    echo;echo rm -rf /datatransfer/output/output; rm -rf /datatransfer/output/output ;
+    echo;echo "ls -l gittmp/bay-of-quinte/output/" ; ls -l gittmp/bay-of-quinte/output/ ;
     echo;echo cp -r gittmp/bay-of-quinte/output /datatransfer/output/output ; cp -r gittmp/bay-of-quinte/output /datatransfer/output/output ;
-    echo;echo "ls -l /datatransfer/output/" ; ls -l /datatransfer/output/ ;
-    echo;echo "ls -l /datatransfer/output/output" ; ls -l /datatransfer/output/output ;
+    echo;echo "gsutil -m cp -r gittmp/bay-of-quinte/output/* gs://${EXTERNAL_BUCKET}/output/{BUCKET_NAME}" ; gsutil -m cp -r "gittmp/bay-of-quinte/output/*" gs://${EXTERNAL_BUCKET}/output/{BUCKET_NAME} ;
     echo;echo \'Done!\'
     """
 
@@ -236,7 +235,8 @@ with models.DAG(JOB_NAME,
           # resources = {'request_cpu':  "3000m", 'request_memory':  "3072M"},
             secrets   = [secret_volume_service_account_key],
             env_vars = {
-                'SERVICE_ACCOUNT_KEY_JSON': '/var/secrets/google/fpca-service-account-key-2022-06-10-a.json'
+                'SERVICE_ACCOUNT_KEY_JSON': '/var/secrets/google/fpca-service-account-key-2022-06-10-a.json',
+                'EXTERNAL_BUCKET': external_bucket
                 },
             tolerations = [{
                 'key': "work",
