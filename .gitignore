@@ -22,6 +22,7 @@ graphics
 graphics-multiyear
 *.RData
 000-data
+01-SECRETS
 *DELETEME*
 ARCHIVE
 *BACKUP*
