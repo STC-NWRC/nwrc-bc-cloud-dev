@@ -189,8 +189,10 @@ with models.DAG(JOB_NAME,
     echo;echo "cd ../.." ; cd ../.. ;
     echo;echo pwd ; pwd ;
     echo;echo ls -l ; ls -l ;
+    echo;echo "ls -l gittmp/" ; ls -l gittmp/ ;
+    echo;echo "ls -l gittmp/bay-of-quinte/" ; ls -l gittmp/bay-of-quinte/ ;
     echo;echo "ls -l gittmp/bay-of-quinte/output/" ; ls -l gittmp/bay-of-quinte/output/ ;
-    echo;echo "gsutil -m cp -r gittmp/bay-of-quinte/output/* gs://${EXTERNAL_BUCKET}/output/{BUCKET_NAME}" ; gsutil -m cp -r "gittmp/bay-of-quinte/output/*" gs://${EXTERNAL_BUCKET}/output/{BUCKET_NAME} ;
+    echo;echo "gsutil -m cp -r gittmp/bay-of-quinte/* gs://${EXTERNAL_BUCKET}/output/{BUCKET_NAME}" ; gsutil -m cp -r "gittmp/bay-of-quinte/*" gs://${EXTERNAL_BUCKET}/output/{BUCKET_NAME} ;
     echo;echo \'Done!\'
     """
 
