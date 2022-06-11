@@ -61,7 +61,7 @@ with models.DAG(JOB_NAME,
     # [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=512
 
     [ -z "${NODE_COUNT}" ] && NODE_COUNT=3
-    [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=n1-standard-2
+    [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-80-262144
     [ -z "${SCOPES}" ] && SCOPES=default,cloud-platform
     [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=20
 
@@ -145,6 +145,8 @@ with models.DAG(JOB_NAME,
     echo;echo "mkdir /datatransfer" ; mkdir /datatransfer;
     echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer ;
     echo;echo ls -l /datatransfer/TrainingData_Geojson ; ls -l /datatransfer/TrainingData_Geojson/ ;
+    echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer ;
+    echo;echo ls -l /datatransfer/img ; ls -l /datatransfer/img/ ;
     echo;echo mkdir github ; mkdir github ;
     echo;echo cd github ; cd github ;
     echo;echo git clone https://github.com/STC-NWRC/bay-of-quinte.git ; git clone https://github.com/STC-NWRC/bay-of-quinte.git ;
@@ -166,29 +168,6 @@ with models.DAG(JOB_NAME,
     """
 
     # Tasks definitions
-    # start_task = DummyOperator(
-    #     task_id="start"
-    #     )
-
-    # end_task = DummyOperator(
-    #     task_id="end"
-    #     )
-
-    # create_node_pool_task = BashOperator(
-    #     task_id      = "create_node_pool",
-    #     bash_command = create_node_pool_command,
-    #     xcom_push    = True,
-    #     dag          = dag
-    # )
-
-    # delete_node_pool_task = BashOperator(
-    #     task_id      = "delete_node_pool",
-    #     bash_command = delete_node_pools_command,
-    #     trigger_rule = 'all_done', # Always run even if failures so the node pool is deleted
-    #     # xcom_push  = True,
-    #     dag          = dag
-    # )
-
     create_node_pool_tasks = []
     delete_node_pool_tasks = []
     fpca_tasks             = []
@@ -220,7 +199,7 @@ with models.DAG(JOB_NAME,
             cmds      = ["sh", "-c", fpca_command.replace("{BUCKET_NAME}",BUCKET_NAME)],
             startup_timeout_seconds = 86400,
           # resources = {'request_cpu': "15000m", 'request_memory': "61440M"},
-          # resources = {'request_cpu':  "3000m", 'request_memory':  "3072M"},
+            resources = {'request_cpu':  "3000m", 'request_memory':  "3072M"},
             secrets   = [secret_volume_service_account_key],
             env_vars = {
                 'SERVICE_ACCOUNT_KEY_JSON': '/var/secrets/google/fpca-service-account-key-2022-06-10-a.json',
