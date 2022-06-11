@@ -250,5 +250,8 @@ with models.DAG(JOB_NAME,
         ))
 
     # Tasks order
+    for i in range(1,len(fpca_tasks)):
+        create_node_pool_tasks[i-1] >> create_node_pool_tasks[i]
+
     for i in range(0,len(fpca_tasks)):
         create_node_pool_tasks[i] >> fpca_tasks[i] >> delete_node_pool_tasks[i]
