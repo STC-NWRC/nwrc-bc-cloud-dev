@@ -45,11 +45,11 @@ code.files <- c(
     "persist-fpc-scores.R",
     "plot-RGB-fpc-scores.R",
     "preprocess-training-data.R",
-    "train-fpc-FeatureEngine.R",
-    "visualize-fpc-approximations.R",
-    "visualize-training-data.R",
     "tiff2parquet.R",
-    "utils-rgb.R"
+    "train-fpc-FeatureEngine.R",
+    "utils-rgb.R",
+    "visualize-fpc-approximations.R",
+    "visualize-training-data.R"
     );
 
 for ( code.file in code.files ) {
@@ -73,7 +73,7 @@ dir.tiffs  <- file.path(data.directory,"001-bay-of-quinte","tiffs");
 dir.parquets <- "parquets-data";
 dir.scores   <- "parquets-scores";
 
-target.variable      <- 'VH'; # 'VV';
+target.variable      <- 'VV'; # 'VH';
 n.harmonics          <- 7;
 RData.trained.engine <- 'trained-fpc-FeatureEngine.RData';
 
@@ -171,7 +171,8 @@ compute.fpc.scores(
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 persist.fpc.scores(
     dir.scores = dir.scores,
-    variable   = target.variable
+    variable   = target.variable,
+    n.cores    = n.cores
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -187,7 +188,8 @@ plot.RGB.fpc.scores(
     channel.blue         = 'fpc_3',
     parquet.file.stem    = paste0('DF-tidy-scores-',     target.variable),
     PNG.output.file.stem = paste0('plot-RGB-fpc-scores-',target.variable),
-    dots.per.inch        = 300
+    dots.per.inch        = 300,
+    n.cores              = n.cores
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###

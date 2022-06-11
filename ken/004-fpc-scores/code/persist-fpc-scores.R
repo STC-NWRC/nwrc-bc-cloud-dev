@@ -1,7 +1,8 @@
 
 persist.fpc.scores <- function(
     dir.scores = NULL,
-    variable   = NULL
+    variable   = NULL,
+    n.cores    = 1
     ) {
 
     thisFunctionName <- "persist.fpc.scores";
@@ -23,7 +24,8 @@ persist.fpc.scores <- function(
     years <- sort(as.integer(years));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    for ( temp.year in years ) {
+    doParallel::registerDoParallel(n.cores);
+    foreach ( temp.year = years ) %dopar% {
 
         temp.pattern <- paste0("^scores-",variable,"-",temp.year,"-");
         score.files  <- list.files(path = dir.scores, pattern = temp.pattern);
@@ -47,6 +49,7 @@ persist.fpc.scores <- function(
             base::remove(list = c('DF.scores'));
             base::gc();
             } # if ( file.exists(parquet.scores) ) { ... } else { ... }
+
         } # for ( temp.year in years ) { ... }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###

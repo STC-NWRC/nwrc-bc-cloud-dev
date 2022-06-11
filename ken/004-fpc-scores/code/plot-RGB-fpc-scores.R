@@ -11,7 +11,8 @@ plot.RGB.fpc.scores <- function(
     channel.blue         = 'fpc_3',
     parquet.file.stem    = paste0('DF-tidy-scores',      variable,'-'),
     PNG.output.file.stem = paste0('plot-RGB-fpc-scores-',variable,'-'),
-    dots.per.inch        = 300
+    dots.per.inch        = 300,
+    n.cores              = 1
     ) {
 
     thisFunctionName <- "plot.RGB.fpc.scores";
@@ -100,7 +101,8 @@ plot.RGB.fpc.scores <- function(
     cat("\nchannel.min.blue  = ",channel.min.blue, ", channel.max.blue  = ",channel.max.blue, "\n");
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    for ( temp.year in years ) {
+    doParallel::registerDoParallel(n.cores);
+    foreach ( temp.year = years ) %dopar% {
 
         PNG.output <- paste0("plot-RGB-",variable,"-",temp.year,".png");
         cat("\ngenerating: ",PNG.output,"\n");
