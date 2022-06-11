@@ -47,11 +47,6 @@ with models.DAG(JOB_NAME,
                 catchup=False
                 ) as dag:
 
-    # This value can be customized to whatever format is preferred for the node pool name
-    # Default node pool naming format is <cluster name>-node-pool-<execution_date>
-    # node_pool_value = "$COMPOSER_ENVIRONMENT-node-pool-$(echo {{ ts_nodash }} | awk '{print tolower($0)}')"
-    node_pool_value = "ndpl-$(echo {{ ts_nodash }} | awk '{print tolower($0)}')"
-
     create_node_pool_command = """
     # Set some environment variables in case they were not set already
 
@@ -70,9 +65,6 @@ with models.DAG(JOB_NAME,
     [ -z "${SCOPES}" ] && SCOPES=default,cloud-platform
     [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=20
 
-    # Generate node-pool name
-    NODE_POOL=""" + node_pool_value + """
-
     echo;echo whoami=`whoami`
     echo;echo pwd; pwd
     echo;echo cd /home/airflow/; cd /home/airflow/
@@ -81,7 +73,7 @@ with models.DAG(JOB_NAME,
     echo;echo COMPOSER_GKE_ZONE=${COMPOSER_GKE_ZONE}
     echo;echo COMPOSER_GKE_NAME=${COMPOSER_GKE_NAME}
     echo;echo CLUSTER_NAME=${CLUSTER_NAME}
-    echo;echo NODE_POOL=${NODE_POOL}
+    echo;echo NODE_POOL={NODE_POOL}
     echo;echo MACHINE_TYPE=${MACHINE_TYPE}
     echo;echo NODE_COUNT=${NODE_COUNT}
     echo;echo NODE_DISK_SIZE=${NODE_DISK_SIZE}
@@ -104,8 +96,8 @@ with models.DAG(JOB_NAME,
 
     sleep 10
 
-    echo;echo Executing: gcloud container node-pools create ${NODE_POOL} ...
-    gcloud container node-pools create ${NODE_POOL} \
+    echo;echo Executing: gcloud container node-pools create {NODE_POOL} ...
+    gcloud container node-pools create {NODE_POOL} \
         --project=${GCP_PROJECT}       --cluster=${COMPOSER_GKE_NAME} --zone=${COMPOSER_GKE_ZONE} \
         --machine-type=${MACHINE_TYPE} --num-nodes=${NODE_COUNT}      --disk-size=${NODE_DISK_SIZE} \
         --enable-autoscaling --min-nodes 1 --max-nodes ${NODE_COUNT} \
@@ -113,8 +105,8 @@ with models.DAG(JOB_NAME,
         --enable-autoupgrade
 
     ### Set the airflow variable name
-    echo;echo Executing: airflow variables -s node_pool ${NODE_POOL}
-    airflow variables -s node_pool ${NODE_POOL}
+    echo;echo Executing: airflow variables -s node_pool {NODE_POOL}
+    airflow variables -s node_pool {NODE_POOL}
 
     sleep 10
 
@@ -129,37 +121,14 @@ with models.DAG(JOB_NAME,
     kubectl get namespaces
 
     sleep 10
-
-    ### create Kubernetes secret environment variable for EXTERNAL_BUCKET, and
-    ### create Kubernetes secret volume for service account key
-    # echo;echo Executing: pwd
-    # pwd
-    # echo;echo Executing: gsutil cp ${EXTERNAL_BUCKET}/secrets/service-account-key.json .
-    # gsutil cp ${EXTERNAL_BUCKET}/secrets/service-account-key.json .
-    # sleep 5
-    # echo;echo Executing: ls -l service-account-key.json
-    # ls -l service-account-key.json
-    # echo;echo Executing: kubectl create secret generic airflow-secrets-fpca ...
-    # kubectl create secret generic airflow-secrets-fpca \
-    #    --from-literal=external_bucket=${EXTERNAL_BUCKET} \
-    #    --from-file=service-account-key.json
-    # sleep 5
-    # rm -f service-account-key.json
-
-    ### check Kubernetes secrets
-    # echo;echo Executing: kubectl get secrets
-    # kubectl get secrets
     """
 
     delete_node_pools_command = """
-    # Generate node-pool name
-    NODE_POOL=""" + node_pool_value + """
-
     echo; echo >> gcloud config set container/cluster ${COMPOSER_GKE_NAME}
     sudo gcloud config set container/cluster ${COMPOSER_GKE_NAME}
 
-    echo;echo Executing: gcloud container node-pools delete ${NODE_POOL} --zone ${COMPOSER_GKE_ZONE} --cluster ${COMPOSER_GKE_NAME} --quiet
-    sudo gcloud container node-pools delete ${NODE_POOL} --zone ${COMPOSER_GKE_ZONE} --cluster ${COMPOSER_GKE_NAME} --quiet
+    echo;echo Executing: gcloud container node-pools delete {NODE_POOL} --zone ${COMPOSER_GKE_ZONE} --cluster ${COMPOSER_GKE_NAME} --quiet
+    sudo gcloud container node-pools delete {NODE_POOL} --zone ${COMPOSER_GKE_ZONE} --cluster ${COMPOSER_GKE_NAME} --quiet
     """
 
     fpca_command = """
@@ -197,31 +166,51 @@ with models.DAG(JOB_NAME,
     """
 
     # Tasks definitions
-    start_task = DummyOperator(
-        task_id="start"
-        )
+    # start_task = DummyOperator(
+    #     task_id="start"
+    #     )
 
-    end_task = DummyOperator(
-        task_id="end"
-        )
+    # end_task = DummyOperator(
+    #     task_id="end"
+    #     )
 
-    create_node_pool_task = BashOperator(
-        task_id      = "create_node_pool",
-        bash_command = create_node_pool_command,
-        xcom_push    = True,
-        dag          = dag
-    )
+    # create_node_pool_task = BashOperator(
+    #     task_id      = "create_node_pool",
+    #     bash_command = create_node_pool_command,
+    #     xcom_push    = True,
+    #     dag          = dag
+    # )
 
-    delete_node_pool_task = BashOperator(
-        task_id      = "delete_node_pool",
-        bash_command = delete_node_pools_command,
-        trigger_rule = 'all_done', # Always run even if failures so the node pool is deleted
-        # xcom_push  = True,
-        dag          = dag
-    )
+    # delete_node_pool_task = BashOperator(
+    #     task_id      = "delete_node_pool",
+    #     bash_command = delete_node_pools_command,
+    #     trigger_rule = 'all_done', # Always run even if failures so the node pool is deleted
+    #     # xcom_push  = True,
+    #     dag          = dag
+    # )
 
-    fpca_tasks = []
+    create_node_pool_tasks = []
+    delete_node_pool_tasks = []
+    fpca_tasks             = []
+
     for BUCKET_NAME in bucket_list:
+
+        NODE_POOL = 'ndpl-' + BUCKET_NAME
+
+        create_node_pool_tasks.append(BashOperator(
+            task_id      = 'create_node_pool_{}'.format(BUCKET_NAME),
+            bash_command = create_node_pool_command.replace("{NODE_POOL}",NODE_POOL),
+            xcom_push    = True,
+            dag          = dag
+        ))
+
+        delete_node_pool_tasks.append(BashOperator(
+            task_id      = 'delete_node_pool_{}'.format(BUCKET_NAME),
+            bash_command = delete_node_pools_command.replace("{NODE_POOL}",NODE_POOL),
+            trigger_rule = 'all_done', # Always run even if failures so the node pool is deleted
+            # xcom_push  = True,
+            dag          = dag
+        ))
 
         fpca_tasks.append(kubernetes_pod.KubernetesPodOperator(
             task_id   = 'fpca_{}'.format(BUCKET_NAME),
@@ -251,7 +240,7 @@ with models.DAG(JOB_NAME,
                                 'key': 'cloud.google.com/gke-nodepool',
                                 'operator': 'In',
                                 'values': [
-                                    Variable.get("node_pool", default_var=node_pool_value)
+                                    Variable.get("node_pool", default_var = NODE_POOL)
                                 ]
                             }]
                         }]
@@ -261,9 +250,5 @@ with models.DAG(JOB_NAME,
         ))
 
     # Tasks order
-    start_task >> create_node_pool_task
-
     for i in range(0,len(fpca_tasks)):
-        create_node_pool_task >> fpca_tasks[i] >> delete_node_pool_task
-
-    delete_node_pool_task >> end_task
+        create_node_pool_tasks[i] >> fpca_tasks[i] >> delete_node_pool_tasks[i]
