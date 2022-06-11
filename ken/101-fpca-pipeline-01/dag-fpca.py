@@ -138,9 +138,7 @@ with models.DAG(JOB_NAME,
     echo;echo EXTERNAL_BUCKET=${EXTERNAL_BUCKET} ;
     echo;echo which docker ; which docker;
     echo;echo which R ; which R ;
-    echo;echo R -e "library(help=arrow)" ; R -e "library(help=arrow)";
-    echo;echo R -e "library(help=fpcFeatures)" ; R -e "library(help=fpcFeatures)";
-    echo;echo ls -l /home/airflow/gcs/data/ ; ls -l /home/airflow/gcs/data/ ;
+    echo;echo R -e "parallel::detectCores()" ; R -e "parallel::detectCores()";
     echo;echo "gsutil ls gs://{BUCKET_NAME}" ; gsutil ls gs://{BUCKET_NAME} ;
     echo;echo "mkdir /datatransfer" ; mkdir /datatransfer;
     echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer ;
