@@ -14,7 +14,7 @@ echo WILLISTON_BUCKET=${WILLISTON_BUCKET}
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # set the active project
-echo; echo Executing: gcloud config set project ${PROJECT_ID}
+echo;echo Executing: gcloud config set project ${PROJECT_ID}
 gcloud config set project ${PROJECT_ID}
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -38,7 +38,7 @@ NODE_MACHINE_TYPE=n1-standard-2
 SQL_MACHINE_TYPE=db-n1-standard-2
 WS_MACHINE_TYPE=composer-n1-webserver-2
 
-echo; echo Executing: gcloud composer environments create ${ENVIRONMENT_NAME} ...
+echo;echo Executing: gcloud composer environments create ${ENVIRONMENT_NAME} ...
 gcloud composer environments create ${ENVIRONMENT_NAME} \
     --location ${LOCATION} \
     --zone     ${ZONE} \
@@ -55,17 +55,17 @@ gcloud composer environments create ${ENVIRONMENT_NAME} \
 # https://cloud.google.com/composer/docs/how-to/using/installing-python-dependencies#viewing_installed_python_packages
 
 CLUSTER_NAME=`gcloud container clusters list | tail -n +2 | awk '{print $1}'`
-echo; echo CLUSTER_NAME=${CLUSTER_NAME}
+echo;echo CLUSTER_NAME=${CLUSTER_NAME}
 
-echo; echo Executing: gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE}
+echo;echo Executing: gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE}
 gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE}
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 AIRFLOW_CLUSTER_NAMESPACE=`kubectl get namespaces | egrep 'airflow' | awk '{print $1}'`
-echo; echo AIRFLOW_CLUSTER_NAMESPACE=${AIRFLOW_CLUSTER_NAMESPACE}
+echo;echo AIRFLOW_CLUSTER_NAMESPACE=${AIRFLOW_CLUSTER_NAMESPACE}
 
 AIRFLOW_POD_NAME=`kubectl get pods -n ${AIRFLOW_CLUSTER_NAMESPACE} | egrep 'worker' | head -n 1 | awk '{print $1}'`
-echo; echo AIRFLOW_POD_NAME=${AIRFLOW_POD_NAME}
+echo;echo AIRFLOW_POD_NAME=${AIRFLOW_POD_NAME}
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 ##### install Python dependencies
@@ -76,12 +76,13 @@ echo; echo AIRFLOW_POD_NAME=${AIRFLOW_POD_NAME}
 
 ### set environment variables
 sleep 20
-echo; echo Executing: gcloud composer environments update -- setting environment variables
+echo;echo Executing: gcloud composer environments update -- setting environment variables
 gcloud composer environments update ${ENVIRONMENT_NAME} --location ${LOCATION} \
    --update-env-variables=WILLISTON_BUCKET=${WILLISTON_BUCKET},BOQ_BUCKET=${BOQ_BUCKET},EXTERNAL_BUCKET=${EXTERNAL_BUCKET},ENVIRONMENT_NAME=${ENVIRONMENT_NAME},LOCATION=${LOCATION},ZONE=${ZONE},CLUSTER_NAME=${CLUSTER_NAME},AIRFLOW_CLUSTER_NAMESPACE=${AIRFLOW_CLUSTER_NAMESPACE}
 
 ### create Kubernetes secret from service account key file
 sleep 20
+echo;echo Executing: kubectl create secret generic -- creating Kubernetes secret
 kubectl create secret generic fpca-secret --from-file=${SERVICE_ACCOUNT_KEY_FILE}
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
