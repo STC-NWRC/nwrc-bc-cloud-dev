@@ -101,8 +101,9 @@ plot.RGB.fpc.scores <- function(
     cat("\nchannel.min.blue  = ",channel.min.blue, ", channel.max.blue  = ",channel.max.blue, "\n");
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    doParallel::registerDoParallel(n.cores);
-    foreach ( temp.year = years ) %dopar% {
+    # doParallel::registerDoParallel(n.cores);
+    # foreach ( temp.year = years ) %dopar% {
+    for ( temp.year in years ) {
 
         PNG.output <- paste0("plot-RGB-",variable,"-",temp.year,".png");
         cat("\ngenerating: ",PNG.output,"\n");
@@ -180,8 +181,12 @@ plot.RGB.fpc.scores_terrainr <- function(
     require(ggplot2);
     require(terrainr);
 
+    print("A-1");
+
     DF.temp <- DF.tidy.scores[,c(x,y,channel.red,channel.green,channel.blue)];
     remove(list = c('DF.tidy.scores'));
+
+    print("A-2");
 
     colnames(DF.temp) <- gsub(x = colnames(DF.temp), pattern = x, replacement = "x");
     colnames(DF.temp) <- gsub(x = colnames(DF.temp), pattern = y, replacement = "y");
@@ -190,6 +195,8 @@ plot.RGB.fpc.scores_terrainr <- function(
     colnames(DF.temp) <- gsub(x = colnames(DF.temp), pattern = channel.green, replacement = "green");
     colnames(DF.temp) <- gsub(x = colnames(DF.temp), pattern = channel.blue,  replacement = "blue" );
 
+    print("A-3");
+
     # for ( temp.colname in c('red','green','blue') ) {
     #     DF.temp[,temp.colname] <- rgb.transform(x = DF.temp[,temp.colname]);
     #     }
@@ -197,7 +204,14 @@ plot.RGB.fpc.scores_terrainr <- function(
     DF.temp[,'green'] <- rgb.transform(x = DF.temp[,'green'], xmin = channel.min.green, xmax = channel.max.green);
     DF.temp[,'blue' ] <- rgb.transform(x = DF.temp[,'blue' ], xmin = channel.min.blue,  xmax = channel.max.blue );
 
+    print("A-4");
+
+    cat("\nstr(DF.temp)\n");
+    print( str(DF.temp)   );
+
     my.ggplot <- ggplot2::ggplot(data = NULL) + ggplot2::theme_bw();
+
+    print("A-5");
 
     # my.ggplot <- my.ggplot + ggplot2::theme(
     #     plot.subtitle = ggplot2::element_text(size = textsize.title, face = "bold")
@@ -215,7 +229,11 @@ plot.RGB.fpc.scores_terrainr <- function(
             )
         );
 
+    print("A-6");
+
     my.ggplot <- my.ggplot + ggplot2::coord_sf(crs = crs.object);
+
+    print("A-7");
 
     # range.y <- sum(range(DF.temp[,'x']) * c(-1,1));
     # range.x <- sum(range(DF.temp[,'y']) * c(-1,1));
@@ -230,7 +248,11 @@ plot.RGB.fpc.scores_terrainr <- function(
         dpi      = dots.per.inch
         );
 
+    print("A-8");
+
     remove(list = c('DF.temp','my.ggplot','range.lat','range.lon'));
+
+    print("A-9");
 
     return( NULL );
 
