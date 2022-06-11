@@ -34,7 +34,7 @@ secret_volume_service_account_key = Secret(
     # type of secret
     deploy_type='volume',
     # Key in the form of service account file name
-    key='service-account-key.json',
+    key='fpca-service-account-key-2022-06-10-a.json',
     # Path where we mount the secret as volume
     deploy_target='/var/secrets/google'
     )
@@ -203,7 +203,7 @@ with models.DAG(JOB_NAME,
           # resources = {'request_cpu':  "3000m", 'request_memory':  "3072M"},
             secrets   = [secret_volume_service_account_key],
             env_vars = {
-                'SERVICE_ACCOUNT_KEY_JSON': '/var/secrets/google/service-account-key.json'
+                'SERVICE_ACCOUNT_KEY_JSON': '/var/secrets/google/fpca-service-account-key-2022-06-10-a.json'
                 },
             tolerations = [{
                 'key': "work",
