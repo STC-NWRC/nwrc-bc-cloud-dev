@@ -16,6 +16,7 @@ source ./global-parameters.txt
 ###     BOQ_BUCKET=gs://fpca-bay-of-quinte-test
 ###     WILLISTON_BUCKET=gs://fpca-williston-a
 ###     SERVICE_ACCOUNT_ID=fpca-service-account
+###     SERVICE_ACCOUNT_KEY_FILE=01-SECRETS/service-account-keys/fpca-service-account-key-2022-06-10-a.json
 ###
 
 ### ########################################### ###
@@ -49,19 +50,17 @@ sleep 10
 ### https://cloud.google.com/iam/docs/creating-managing-service-account-keys
 ### https://console.cloud.google.com/projectselector2/iam-admin/serviceaccounts
 
-OUTPUT_KEY_FILE=01-SECRETS/service-account-keys/fpca-service-account-key-2022-06-10-a.json
-
-# echo;echo gcloud iam service-accounts keys create ${OUTPUT_KEY_FILE} --iam-account=${SERVICE_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com
-#           gcloud iam service-accounts keys create ${OUTPUT_KEY_FILE} --iam-account=${SERVICE_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com
+# echo;echo gcloud iam service-accounts keys create ${SERVICE_ACCOUNT_KEY_FILE} --iam-account=${SERVICE_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com
+#           gcloud iam service-accounts keys create ${SERVICE_ACCOUNT_KEY_FILE} --iam-account=${SERVICE_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com
 
 sleep 10
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-### (c)  Create a Kubernetes secret.
+### (c)  Create a Kubernetes secret from the service account key file.
 ###
 
-echo;echo kubectl create secret generic fpca-secret --from-file=${OUTPUT_KEY_FILE}
-#         kubectl create secret generic fpca-secret --from-file=${OUTPUT_KEY_FILE}
+echo;echo kubectl create secret generic fpca-secret --from-file=${SERVICE_ACCOUNT_KEY_FILE}
+#         kubectl create secret generic fpca-secret --from-file=${SERVICE_ACCOUNT_KEY_FILE}
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 ### list service accounts

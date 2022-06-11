@@ -80,4 +80,9 @@ echo; echo Executing: gcloud composer environments update -- setting environment
 gcloud composer environments update ${ENVIRONMENT_NAME} --location ${LOCATION} \
    --update-env-variables=WILLISTON_BUCKET=${WILLISTON_BUCKET},BOQ_BUCKET=${BOQ_BUCKET},EXTERNAL_BUCKET=${EXTERNAL_BUCKET},ENVIRONMENT_NAME=${ENVIRONMENT_NAME},LOCATION=${LOCATION},ZONE=${ZONE},CLUSTER_NAME=${CLUSTER_NAME},AIRFLOW_CLUSTER_NAMESPACE=${AIRFLOW_CLUSTER_NAMESPACE}
 
+### create Kubernetes secret from service account key file
+sleep 20
+kubectl create secret generic fpca-secret --from-file=${SERVICE_ACCOUNT_KEY_FILE}
+
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+
