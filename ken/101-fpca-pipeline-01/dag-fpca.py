@@ -115,9 +115,17 @@ with models.DAG(JOB_NAME,
 
     sleep 10
 
-    ### Pre-emptive deletion of node pool (in case a node pool with same name already exists)
-    echo;echo Executing: gcloud container node-pools delete {NODE_POOL} ...
-    gcloud container node-pools delete {NODE_POOL} --quiet --cluster=${COMPOSER_GKE_NAME} --zone=${COMPOSER_GKE_ZONE}
+    n_matches=`gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME} | awk '{ print $1 }'| egrep '{NODE_POOL}' | wc -l`
+    if [ "${n_matches}" -gt "0" ]; then
+        ### Pre-emptive deletion of node pool (in case a node pool with same name already exists)
+        echo;echo Executing: gcloud container node-pools delete {NODE_POOL} ...\
+        gcloud container node-pools delete {NODE_POOL} --quiet --cluster=${COMPOSER_GKE_NAME} --zone=${COMPOSER_GKE_ZONE}
+        sleep 10
+        ### List node pools
+        echo;echo Executing: gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
+        gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
+        sleep 10
+    fi
 
     sleep 20
 
@@ -129,11 +137,11 @@ with models.DAG(JOB_NAME,
         --scopes=${SCOPES} \
         --enable-autoupgrade
 
-    # sleep 10
-    #
+    sleep 10
+
     ### Set the airflow variable name
-    # echo;echo Executing: airflow variables -s node_pool {NODE_POOL}
-    # airflow variables -s node_pool {NODE_POOL}
+    echo;echo Executing: airflow variables -s node_pool {NODE_POOL}
+    airflow variables -s node_pool {NODE_POOL}
 
     sleep 60
 
