@@ -109,6 +109,12 @@ with models.DAG(JOB_NAME,
 
     sleep 10
 
+    ### List node pools
+    echo;echo Executing: gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
+    gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
+
+    sleep 10
+
     ### Pre-emptive deletion of node pool (in case a node pool with same name already exists)
     echo;echo Executing: gcloud container node-pools delete {NODE_POOL} ...
     gcloud container node-pools delete {NODE_POOL} --quiet --cluster=${COMPOSER_GKE_NAME} --zone=${COMPOSER_GKE_ZONE}
@@ -132,7 +138,7 @@ with models.DAG(JOB_NAME,
     sleep 60
 
     ### List node pools
-    echo;echo gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
+    echo;echo Executing: gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
     gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
 
     sleep 10
