@@ -141,9 +141,15 @@ with models.DAG(JOB_NAME,
 
     sleep 10
 
+    ### Show airflow version
+    echo;echo Executing: airflow version
+    airflow version
+
     ### Set the airflow variable name
-    echo;echo Executing: airflow variables -s node_pool {NODE_POOL}
-    airflow variables -s node_pool {NODE_POOL}
+    # obsolete:                         airflow variables -s node_pool {NODE_POOL}
+    # documentation (1.10.15+composer): airflow variables set key VALUE
+    echo;echo Executing: airflow variables set node_pool {NODE_POOL}
+    airflow variables set node_pool {NODE_POOL}
 
     sleep 60
 
