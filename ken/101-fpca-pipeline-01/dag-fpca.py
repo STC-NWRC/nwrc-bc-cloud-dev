@@ -63,10 +63,11 @@ with models.DAG(JOB_NAME,
 
     [ -z "${SCOPES}" ] && SCOPES=default,cloud-platform
     [ -z "${NODE_COUNT}" ] && NODE_COUNT=1
-    # [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-80-262144
-    # [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=512
-    [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-4-5120
-    [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=64
+
+    # [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-4-5120
+    # [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=64
+    [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-80-262144
+    [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=512
 
     echo;echo whoami=`whoami`
     echo;echo pwd; pwd
@@ -180,7 +181,7 @@ with models.DAG(JOB_NAME,
     echo;echo "mkdir /datatransfer" ; mkdir /datatransfer;
     echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer ;
     echo;echo ls -l /datatransfer/TrainingData_Geojson ; ls -l /datatransfer/TrainingData_Geojson/ ;
-    # echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer ;
+    echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer ;
     echo;echo ls -l /datatransfer/img ; ls -l /datatransfer/img/ ;
     echo;echo mkdir github ; mkdir github ;
     echo;echo cd github ; cd github ;
