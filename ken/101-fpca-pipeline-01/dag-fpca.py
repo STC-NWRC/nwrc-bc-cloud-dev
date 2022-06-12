@@ -50,6 +50,7 @@ with models.DAG(JOB_NAME,
     create_node_pool_command = """
     # Set some environment variables in case they were not set already
 
+    # [ -z "${NODE_COUNT}" ] && NODE_COUNT=3
     # [ -z "${NODE_COUNT}" ] && NODE_COUNT=6
     # [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=n1-standard-2
     # [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-4-5120
@@ -60,7 +61,7 @@ with models.DAG(JOB_NAME,
     # [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=128
     # [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=512
 
-    [ -z "${NODE_COUNT}" ] && NODE_COUNT=3
+    [ -z "${NODE_COUNT}" ] && NODE_COUNT=1
     [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-80-262144
     [ -z "${SCOPES}" ] && SCOPES=default,cloud-platform
     [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=512
@@ -96,20 +97,6 @@ with models.DAG(JOB_NAME,
 
     sleep 10
 
-    echo;echo Executing: gcloud container node-pools create {NODE_POOL} ...
-    gcloud container node-pools create {NODE_POOL} \
-        --project=${GCP_PROJECT}       --cluster=${COMPOSER_GKE_NAME} --zone=${COMPOSER_GKE_ZONE} \
-        --machine-type=${MACHINE_TYPE} --num-nodes=${NODE_COUNT}      --disk-size=${NODE_DISK_SIZE} \
-        --enable-autoscaling --min-nodes 1 --max-nodes ${NODE_COUNT} \
-        --scopes=${SCOPES} \
-        --enable-autoupgrade
-
-    ### Set the airflow variable name
-    echo;echo Executing: airflow variables -s node_pool {NODE_POOL}
-    airflow variables -s node_pool {NODE_POOL}
-
-    sleep 10
-
     ### Examine clusters
     echo;echo Executing: gcloud container clusters list
     gcloud container clusters list
@@ -119,6 +106,34 @@ with models.DAG(JOB_NAME,
     ### Examine Kubernetes namespaces
     echo;echo Executing: kubectl get namespaces
     kubectl get namespaces
+
+    sleep 10
+
+    ### Pre-emptive deletion of node pool (in case a node pool with same name already exists)
+    echo;echo Executing: gcloud container node-pools delete {NODE_POOL} ...
+    gcloud container node-pools delete {NODE_POOL} --quiet --cluster=${COMPOSER_GKE_NAME} --zone=${COMPOSER_GKE_ZONE}
+
+    sleep 20
+
+    echo;echo Executing: gcloud container node-pools create {NODE_POOL} ...
+    gcloud container node-pools create {NODE_POOL} \
+        --project=${GCP_PROJECT}       --cluster=${COMPOSER_GKE_NAME} --zone=${COMPOSER_GKE_ZONE} \
+        --machine-type=${MACHINE_TYPE} --num-nodes=${NODE_COUNT}      --disk-size=${NODE_DISK_SIZE} \
+        --enable-autoscaling --min-nodes 1 --max-nodes ${NODE_COUNT} \
+        --scopes=${SCOPES} \
+        --enable-autoupgrade
+
+    # sleep 10
+    #
+    ### Set the airflow variable name
+    # echo;echo Executing: airflow variables -s node_pool {NODE_POOL}
+    # airflow variables -s node_pool {NODE_POOL}
+
+    sleep 60
+
+    ### List node pools
+    echo;echo gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
+    gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME}
 
     sleep 10
     """
@@ -143,7 +158,7 @@ with models.DAG(JOB_NAME,
     echo;echo "mkdir /datatransfer" ; mkdir /datatransfer;
     echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/TrainingData_Geojson /datatransfer ;
     echo;echo ls -l /datatransfer/TrainingData_Geojson ; ls -l /datatransfer/TrainingData_Geojson/ ;
-    echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer ;
+    # echo;echo "gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer" ; gsutil -m cp -r gs://{BUCKET_NAME}/img /datatransfer ;
     echo;echo ls -l /datatransfer/img ; ls -l /datatransfer/img/ ;
     echo;echo mkdir github ; mkdir github ;
     echo;echo cd github ; cd github ;
@@ -173,7 +188,9 @@ with models.DAG(JOB_NAME,
     for BUCKET_NAME in bucket_list:
 
         # NODE_POOL = 'ndpl-' + BUCKET_NAME + str(datetime.datetime.now()).replace(" ","-").replace(":","-").replace(".","-")
-        NODE_POOL = 'ndpl-' + str(datetime.datetime.now()).replace(" ","-").replace(":","-").replace(".","-")
+        # NODE_POOL = 'ndpl-' + str(datetime.datetime.now()).replace(" ","-").replace(":","-").replace(".","-")
+        NODE_POOL = 'ndpl-' + BUCKET_NAME
+        NODE_POOL = NODE_POOL.lower().replace(" ","-").replace(":","-").replace(".","-")
 
         create_node_pool_tasks.append(BashOperator(
             task_id      = 'create_node_pool_{}'.format(BUCKET_NAME),
