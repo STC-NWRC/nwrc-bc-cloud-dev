@@ -118,7 +118,7 @@ with models.DAG(JOB_NAME,
     n_matches=`gcloud container node-pools list --zone=${COMPOSER_GKE_ZONE} --cluster=${COMPOSER_GKE_NAME} | awk '{ print $1 }'| egrep '{NODE_POOL}' | wc -l`
     if [ "${n_matches}" -gt "0" ]; then
         ### Pre-emptive deletion of node pool (in case a node pool with same name already exists)
-        echo;echo Executing: gcloud container node-pools delete {NODE_POOL} ...\
+        echo;echo Executing: gcloud container node-pools delete {NODE_POOL} ...
         gcloud container node-pools delete {NODE_POOL} --quiet --cluster=${COMPOSER_GKE_NAME} --zone=${COMPOSER_GKE_ZONE}
         sleep 10
         ### List node pools
