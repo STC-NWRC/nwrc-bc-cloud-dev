@@ -1,4 +1,4 @@
-GCP FPCA Workflow Prototype v00
+GCP FPCA Workflow Prototype v01
 ===============================
 
 This task is the first prototype of the GCP FPCA workflow.
