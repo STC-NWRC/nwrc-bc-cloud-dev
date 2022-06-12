@@ -61,10 +61,12 @@ with models.DAG(JOB_NAME,
     # [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=128
     # [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=512
 
-    [ -z "${NODE_COUNT}" ] && NODE_COUNT=1
-    [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-80-262144
     [ -z "${SCOPES}" ] && SCOPES=default,cloud-platform
-    [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=512
+    [ -z "${NODE_COUNT}" ] && NODE_COUNT=1
+    # [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-80-262144
+    # [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=512
+    [ -z "${MACHINE_TYPE}" ] && MACHINE_TYPE=custom-4-5120
+    [ -z "${NODE_DISK_SIZE}" ] && NODE_DISK_SIZE=64
 
     echo;echo whoami=`whoami`
     echo;echo pwd; pwd
