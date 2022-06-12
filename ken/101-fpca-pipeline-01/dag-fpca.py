@@ -172,7 +172,8 @@ with models.DAG(JOB_NAME,
 
     for BUCKET_NAME in bucket_list:
 
-        NODE_POOL = 'ndpl-' + BUCKET_NAME + str(datetime.datetime.now()).replace(" ","-").replace(":","-").replace(".","-")
+        # NODE_POOL = 'ndpl-' + BUCKET_NAME + str(datetime.datetime.now()).replace(" ","-").replace(":","-").replace(".","-")
+        NODE_POOL = 'ndpl-' + str(datetime.datetime.now()).replace(" ","-").replace(":","-").replace(".","-")
 
         create_node_pool_tasks.append(BashOperator(
             task_id      = 'create_node_pool_{}'.format(BUCKET_NAME),
