@@ -143,9 +143,9 @@ with models.DAG(JOB_NAME,
     # The trailing ampersand of the last command instructs the shell to run that
     # command as a background job. The following wait command instructs the
     # shell to pause the script (i.e., not to execute subsequent commands yet)
-    # until all background jobs are finished. Hence, the script now will wait
-    # until the node pool creation is complete before continuing to execute the
-    # rest of the script.
+    # until all background jobs are finished. In particular, the script now will
+    # wait until the node pool creation is complete before continuing to execute
+    # the rest of the script.
 
     wait
 
