@@ -138,7 +138,16 @@ with models.DAG(JOB_NAME,
         --machine-type=${MACHINE_TYPE} --num-nodes=${NODE_COUNT}      --disk-size=${NODE_DISK_SIZE} \
         --enable-autoscaling --min-nodes 1 --max-nodes ${NODE_COUNT} \
         --scopes=${SCOPES} \
-        --enable-autoupgrade
+        --enable-autoupgrade &
+
+    # The trailing ampersand of the last command instructs the shell to run that
+    # command as a background job. The following wait command instructs the
+    # shell to pause the script (i.e., not to execute subsequent commands yet)
+    # until all background jobs are finished. Hence, the script now will wait
+    # until the node pool creation is complete before executing the rest of the
+    # script.
+
+    wait
 
     sleep 10
 
