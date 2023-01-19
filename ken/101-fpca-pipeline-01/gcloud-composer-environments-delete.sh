@@ -15,12 +15,12 @@ echo
 gcloud compute disks list
 echo
 
-DISK_NAMES=(`gcloud compute disks list | tail -n +2 | awk '{print $1}'`)
-for diskname in "${DISK_NAMES[@]}"
-do
-    echo deleting disk: ${diskname}
-    gcloud compute disks delete ${diskname} --zone=${ZONE} --quiet
-done
+# DISK_NAMES=(`gcloud compute disks list | tail -n +2 | awk '{print $1}'`)
+# for diskname in "${DISK_NAMES[@]}"
+# do
+#     echo deleting disk: ${diskname}
+#     gcloud compute disks delete ${diskname} --zone=${ZONE} --quiet
+# done
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # remove environment's bucket
